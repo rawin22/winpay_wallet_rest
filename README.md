@@ -1,6 +1,6 @@
 # WinPay Wallet
 
-WinPay Wallet is a robust financial wallet application built with **ASP.NET Core 9.0**. It provides a few examples of features for managing user accounts, financial transactions, foreign exchange deals, and instant payments, integrated with secure authentication and multi-language support.
+WinPay Wallet is a basic financial wallet application built with **ASP.NET Core 9.0**. It provides a few examples of features for managing user accounts, financial transactions, foreign exchange deals, and instant payments, integrated with secure authentication and multi-language support.
 
 ## 🚀 Features
 
