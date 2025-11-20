@@ -1,0 +1,58 @@
+﻿@page
+@model Wallet.Pages.History.ReceiveModel
+@{
+    ViewData["Title"] = "Payment Receive History";
+}
+
+<div class="card">
+    <div class="card-body">
+        <div class="d-flex justify-content-between">
+            <div>
+                <label>Display</label>
+                <select class="form-control d-inline-block w-auto">
+                    <option>100</option>
+                    <option>50</option>
+                    <option>25</option>
+                </select>
+                records per page
+            </div>
+            <input type="text" class="form-control w-25" placeholder="Search">
+        </div>
+
+        <table class="table table-striped mt-3">
+            <thead>
+                <tr>
+                    <th>Alias</th>
+                    <th>Amount</th>
+                    <th>CCY</th>
+                    <th>Created Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>ralf@winstantpay.com</td>
+                    <td class="text-success">+1,500.00</td>
+                    <td>USD 🇺🇸</td>
+                    <td>Feb 15, 2025</td>
+                </tr>
+                <tr>
+                    <td>john.doe@winstantpay.com</td>
+                    <td class="text-success">+3,000.00</td>
+                    <td>THB 🇹🇭</td>
+                    <td>Jan 30, 2025</td>
+                </tr>
+                <tr>
+                    <td>alice@winstantpay.com</td>
+                    <td class="text-success">+500.00</td>
+                    <td>EUR 🇪🇺</td>
+                    <td>Jan 10, 2025</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p class="text-center text-muted">No more records available</p>
+
+        <button class="btn btn-success">Create QR Code</button>
+    </div>
+    <p>The basis is: <a href="https://wallet.winstantpay.com/QrGen/History" target="_blank">https://wallet.winstantpay.com/QrGen/History</a></p>
+</div>

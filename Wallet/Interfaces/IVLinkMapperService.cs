@@ -1,0 +1,23 @@
+﻿using GPWebApi.DTO;
+using Wallet.Models;
+
+namespace Wallet.Interfaces;
+
+public interface IVLinkMapperService
+{
+	VLinkViewModel MapVLinkDataToViewModel(VerifiedLinkData data);
+	VerifiedLinkUpdateRequest MapVLinkViewModelToUpdateRequest(VLinkViewModel model);
+	VerifiedLinkUpdateRequest MapVerifiedLinkDataToUpdateRequest(VerifiedLinkData data);
+	VerifiedLinkCreateRequest MapVLinkViewModelToCreateRequest(VLinkViewModel model);
+	VerifiedLinkCreateRequest MapGetVerifiedViewModelToCreateRequest(GetVerifiedViewModel model);
+	VerifiedLinkCreateRequest MapGetVerifiedViewModelToCreateRequest(GetVerifiedViewModel model, CustomerGetData customerData);
+	VerifiedLinkCreateRequest MapStealthIdModelToCreateRequest(StealthIdModel model, Guid customerId);
+	VerifiedLinkUpdateRequest MapStealthIdModelToUpdateRequest(StealthIdModel model);
+	ZKQRViewModel MapVLinkDataToZKQRViewModel(VerifiedLinkData data);
+	VerifiedLinkCreateRequest MapZKQRViewModelToCreateRequest(ZKQRViewModel model, Guid customerId);
+	VerifiedLinkUpdateRequest MapZKQRViewModelToUpdateRequest(ZKQRViewModel model);
+	VerifiedLinkDeleteRequest MapVLinkViewModelToDeleteRequest(VLinkViewModel model);
+	VerifiedLinkDeleteRequest MapZKQRViewModelToDeleteRequest(ZKQRViewModel model);
+	VerifyResultModel MapVLinkDataToVerifyResultModel(VerifiedLinkData data);
+	VerifiedLinkDeleteRequest MapVLinkDataToDeleteRequest(VerifiedLinkData model);
+}

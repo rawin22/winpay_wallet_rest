@@ -1,0 +1,137 @@
+﻿@page
+@model Wallet.Pages.History.ConvertModel
+@{
+    ViewData["Title"] = "Convert History";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/flags.css">
+    <link rel="stylesheet" href="~/css/remixicon.css">
+    <style>
+        /* Reusing styles from Pay.cshtml for consistency */
+        .action-icons a {
+            text-decoration: none;
+            color: var(--bs-secondary-color);
+            margin-left: 8px;
+            font-size: 1.1rem;
+        }
+
+            .action-icons a:hover {
+                color: var(--bs-primary);
+            }
+
+        .history-item-row { /* Renamed class slightly for clarity */
+            border-bottom: 1px solid var(--bs-border-color-translucent);
+            padding-bottom: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+            .history-item-row:last-child {
+                border-bottom: none;
+                margin-bottom: 0;
+                padding-bottom: 0;
+            }
+
+            .history-item-row > div {
+                padding-top: 0.25rem;
+                padding-bottom: 0.25rem;
+            }
+
+        .details-text {
+            font-size: 0.85em;
+            line-height: 1.4;
+        }
+
+        .conversion-leg { /* Class for Buy/Sell sections */
+            display: flex;
+            align-items: center;
+        }
+
+            .conversion-leg .fi { /* Ensure flags align nicely */
+                margin-right: 0.5rem;
+                flex-shrink: 0;
+            }
+    </style>
+}
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">@ViewData["Title"]</h5>
+        <small class="text-muted">Recent currency conversions (FX Deals)</small>
+    </div>
+    <div class="card-body">
+
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="alert alert-warning" role="alert">
+                @* Using warning as error cause isn't certain *@
+                @Model.ErrorMessage
+            </div>
+        }
+
+        @if (Model.Conversions == null || !Model.Conversions.Any())
+        {
+            @if (string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <p class="text-muted">No conversion history found.</p>
+            }
+        }
+        else
+        {
+            @foreach (var deal in Model.Conversions)
+            {
+                // Bootstrap Row for each item
+                <div class="history-item-row row g-2 align-items-center">
+
+                    @* === Column 1: Date & Reference === *@
+                    <div class="col-12 col-lg-3 mb-1 mb-lg-0">
+                        <span class="fw-medium text-sm d-block">@Model.FormatDateTime(deal.BookedTime)</span>
+                        @if (!string.IsNullOrWhiteSpace(deal.FXDealReference))
+                        {
+                            <span class="text-xs text-muted d-block">Ref: @deal.FXDealReference</span>
+                        }
+                        else
+                        {
+                            <span class="text-xs text-muted d-block">Ref: N/A</span>
+                        }
+                    </div>
+
+                    @* === Column 2: Sell Leg === *@
+                    <div class="col-6 col-lg-3 mb-1 mb-lg-0">
+                        <div class="conversion-leg">
+                            <span class="fi @Model.GetFlagClass(deal.SellCurrencyCode) w-20-px h-20-px rounded-circle overflow-hidden"></span>
+                            <span class="fw-semibold text-danger">
+                                - @(deal.SellAmountTextBare ?? deal.SellAmount.ToString("N" + deal.SellCurrencyScale)) @deal.SellCurrencyCode
+                            </span>
+                        </div>
+                        <small class="text-muted d-block ms-4 ps-1">Sell</small> @* Indent slightly *@
+                    </div>
+
+                    @* === Column 3: Buy Leg === *@
+                    <div class="col-6 col-lg-3 mb-1 mb-lg-0">
+                        <div class="conversion-leg">
+                            <span class="fi @Model.GetFlagClass(deal.BuyCurrencyCode) w-20-px h-20-px rounded-circle overflow-hidden"></span>
+                            <span class="fw-semibold text-success">
+                                + @(deal.BuyAmountTextBare ?? deal.BuyAmount.ToString("N" + deal.BuyCurrencyScale)) @deal.BuyCurrencyCode
+                            </span>
+                        </div>
+                        <small class="text-muted d-block ms-4 ps-1">Buy</small> @* Indent slightly *@
+                    </div>
+
+
+                    @* === Column 4: Rate & Actions === *@
+                    <div class="col-12 col-lg-3 text-start text-lg-end">
+                        <span class="text-muted me-1">Rate:</span>
+                        <span class="fw-semibold">
+                            @(deal.BookedRateTextBare ?? deal.BookedRate.ToString("N" + deal.BookedRateScale)) @deal.RateFormat
+                        </span>
+                    </div>
+
+                </div> @* End .row *@
+            }
+        }
+    </div>
+    <div class="card-footer text-muted text-center">
+        <small>Displaying latest @Model.Conversions.Count conversion records.</small>
+    </div>
+</div>

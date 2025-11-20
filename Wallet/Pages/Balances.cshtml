@@ -1,0 +1,84 @@
+﻿@page
+@model Wallet.Pages.BalancesModel
+@{
+    ViewData["Title"] = "Balances";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="/css/flags.css">
+}
+
+<div class="container mt-4">
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger">@Model.ErrorMessage</div>
+    }
+    else if (!Model.Balances.Any())
+    {
+        <div class="alert alert-warning">No balances available.</div>
+    }
+    else
+    {
+        @if (Model.ViewOption == 2)
+        {
+            @foreach (var balance in Model.Balances)
+            {
+                <div class="d-flex align-items-center justify-content-between gap-3 mb-32">
+                    <div class="d-flex align-items-center">
+                        @* <span class="flag flag-@balance.CurrencyCode.ToLower() flag-scale w-40-px h-40-px rounded-circle flex-shrink-0 me-12 overflow-hidden"></span> *@
+                        <img src="~/images/customCurrency/@(balance.CurrencyCode.ToLower() + ".png")" class="w-40-px h-40-px rounded-circle flex-shrink-0 me-12 overflow-hidden" alt="@balance.CurrencyCode flag" />
+
+                        <div class="flex-grow-1">
+                            <a asp-page="/History/Statement"
+                               asp-route-accountId="@balance.AccountId"
+                               asp-route-accountNumber="@balance.AccountNumber"
+                               asp-route-currencyCode="@balance.CurrencyCode"
+                               asp-route-balance="@balance.Balance"
+                               asp-route-activeHoldsTotal="@balance.ActiveHoldsTotal"
+                               asp-route-balanceAvailable="@balance.BalanceAvailable"
+                               asp-route-baseCurrencyCode="@balance.BaseCurrencyCode"
+                               asp-route-balanceAvailableBase="@balance.BalanceAvailableBase">
+                                <h6 class="text-md mb-0 text-decoration-underline">@balance.CurrencyCode</h6>
+                            </a>
+                            <br> <span class="text-sm text-secondary-light fw-medium underline-account">Account: @balance.AccountNumber</span>
+                        </div>
+                    </div>
+                    <span class="text-primary-light text-md fw-medium">@balance.BalanceAvailableTextWithCurrencyCode</span>
+                </div>
+            }
+
+
+        }
+        else
+        {
+
+            <table class="table bordered-table sm-table mb-0">
+                <thead>
+                    <tr>
+                        <th>Account Number</th>
+                        <th>Currency</th>
+                        <th>Balance</th>
+                        <th>Available Balance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var balance in Model.Balances)
+                    {
+                        <tr>
+                            <td>@balance.AccountNumber</td>
+                            <td>
+                                <span class="flag flag-scale flag-@balance.CurrencyCode.ToLower()"></span> <!-- ✅ Correct way to show flag -->
+                                @balance.CurrencyCode
+                            </td>
+                            <td>@Math.Round(balance.Balance, 2)</td> <!-- ✅ Fix missing `</td>` -->
+                            <td class="@(balance.BalanceAvailable < 0 ? "text-danger" : "")">
+                                @Math.Round(balance.BalanceAvailable, 2)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    }
+</div>

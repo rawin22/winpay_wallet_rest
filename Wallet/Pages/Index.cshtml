@@ -1,0 +1,73 @@
+﻿@page
+@model IndexModel
+@inject Wallet.Pages.Shared.Components.BalanceCardsModel BalanceCardsModel
+@inject Wallet.Pages.Shared.Components.FxCardsModel FxCardsModel
+
+@{
+    ViewData["Title"] = @Model.Greeting;
+    ViewData["subTitle"] = "May the force be wih you!";
+}
+
+
+
+<div class="row gy-4">
+    <div class="col-lg-9">
+        @* Include the Balances page as a subpage *@
+        @* <partial name="/Shared/Components/BalanceCards" /> *@
+        <partial name="~/Pages/Shared/Components/BalanceCards.cshtml" model="Model._balanceCardsModel" />
+        <partial name="~/Pages/Shared/Components/ReleaseNotes.cshtml" />
+
+
+
+    </div>
+    <div class="col-lg-3">
+        <div class="card h-100">
+            <div class="card-body p-0">
+                <div class="px-24 py-20">
+                    <span class="mb-8">USD Equivalent.</span>
+                    <h5 class="text-2xl">@Model.TotalBalance.ToString("F2")</h5>
+                    <div class="mt-24 pb-24 mb-24 border-bottom d-flex align-items-center gap-16 justify-content-between flex-wrap">
+                        <div class="text-center d-flex align-items-center flex-column">
+                            <a asp-page="/PayNow" class="text-decoration-none text-reset d-flex flex-column align-items-center">
+                                <span class="w-60-px h-60-px bg-primary-100 text-primary-600 text-2xl d-inline-flex justify-content-center align-items-center rounded-circle">
+                                    <i class="ri-add-line"></i>
+                                </span>
+                                <span class="text-primary-light fw-medium mt-6">PayNow</span>
+                            </a>
+                        </div>
+                        <div class="text-center d-flex align-items-center  flex-column">
+                            <a asp-page="/ConvertAndExchange" class="text-decoration-none text-reset d-flex flex-column align-items-center">
+                                <span class="w-60-px h-60-px bg-primary-100 text-primary-600 text-2xl d-inline-flex justify-content-center align-items-center rounded-circle ">
+                                    <i class="ri-arrow-left-right-line"></i>
+                                </span>
+                                <span class="text-primary-light fw-medium mt-6">Convert</span>
+                            </a>
+
+                        </div>
+                        <div class="text-center d-flex align-items-center  flex-column">
+                            <a asp-page="/PaymentWizard" class="text-decoration-none text-reset d-flex flex-column align-items-center">
+                                <span class="w-60-px h-60-px bg-primary-100 text-primary-600 text-2xl d-inline-flex justify-content-center align-items-center rounded-circle ">
+                                    <i class="ri-upload-2-line"></i>
+                                </span>
+                                <span class="text-primary-light fw-medium mt-6">Wire</span>
+                            </a>
+                        </div>
+                        <div class="text-center d-flex align-items-center  flex-column">
+                            <a asp-page="/Receive" class="text-decoration-none text-reset d-flex flex-column align-items-center">
+                                <span class="w-60-px h-60-px bg-primary-100 text-primary-600 text-2xl d-inline-flex justify-content-center align-items-center rounded-circle ">
+                                    <i class="ri-download-2-line"></i>
+                                </span>
+                                <span class="text-primary-light fw-medium mt-6">Receive</span>
+                            </a>
+                        </div>
+                    </div>
+                    <partial name="~/Pages/Shared/Components/PaymentCards.cshtml" model="Model._paymentCardsModel" />
+                    @* <partial name="~/Pages/Shared/Components/FxCards.cshtml" model="Model._fxCardsModel" /> *@
+                    <partial name="~/Pages/Shared/Components/FxCards.cshtml" model="Model._fxCardsModel" />
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,62 @@
+﻿@page
+@model Wallet.Pages.ReceiveModel
+@{
+    ViewData["Title"] = "Receive Payment";
+}
+
+<div class="card">
+    <div class="card-body">
+
+        <h5>Share QR code or link to get paid</h5>
+
+        <div class="form-group">
+            <label for="wpayId">Select WPayId <span class="text-danger">*</span></label>
+            <select class="form-control" id="wpayId">
+                <option>ralf@winstantpay.com</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="currency">Currency</label>
+            <input type="text" class="form-control" id="currency" value="🇺🇸 0 USD US Dollars" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="amount">Amount</label>
+            <input type="number" class="form-control" id="amount" value="0">
+        </div>
+
+        <div class="form-group">
+            <label for="invoice">Invoice Number</label>
+            <input type="text" class="form-control" id="invoice">
+        </div>
+
+        <div class="form-group">
+            <label for="attachedFile">Attached File</label>
+            <input type="file" class="form-control" id="attachedFile">
+        </div>
+
+        <div class="form-group">
+            <label for="memo">Memo</label>
+            <input type="text" class="form-control" id="memo">
+        </div>
+
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" class="form-control" id="name">
+        </div>
+
+        <div class="form-group">
+            <label for="address">Address</label>
+            <input type="text" class="form-control" id="address">
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email">
+        </div>
+
+        <button class="btn btn-primary">Generate QR Code</button>
+    </div>
+    <p>The basis is: <a href="https://wallet.winstantpay.com/QrGen/Index" target="_blank">https://wallet.winstantpay.com/QrGen/Index</a></p>
+</div>

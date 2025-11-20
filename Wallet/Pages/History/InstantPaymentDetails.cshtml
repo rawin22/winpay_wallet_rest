@@ -1,0 +1,150 @@
+﻿@page "/History/InstantPaymentDetails/{id:guid}"
+@model Wallet.Pages.History.InstantPaymentDetailsModel
+@{
+    ViewData["Title"] = "Payment Details";
+    var payment = Model.PaymentDetails; // Shortcut for easier access
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/flags.css"> @* Ensure flags CSS is linked *@
+    <style>
+        /* Style for definition list to look good on mobile */
+        .details-dl dt {
+            font-weight: 500; /* Medium weight for terms */
+            margin-bottom: 0.25rem; /* Space below term on small screens */
+        }
+
+        .details-dl dd {
+            margin-bottom: 0.75rem; /* Space below definition */
+        }
+
+        /* On medium screens and up, use two columns */
+        @@media (min-width: 768px) {
+            .details-dl dt {
+                margin-bottom: 0; /* Remove bottom margin on larger screens */
+            }
+
+            .details-dl dd {
+                margin-bottom: 0.5rem; /* Adjust spacing for larger screens */
+            }
+        }
+    </style>
+}
+
+<div class="card">
+    @* <div class="card-header"> *@
+    @*     <h5 class="card-title mb-0">@ViewData["Title"]</h5> *@
+    @* </div> *@
+    <div class="card-body">
+
+        @* Display Error Message if any *@
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="alert alert-danger" role="alert">
+                @Model.ErrorMessage
+            </div>
+        }
+        else if (payment == null) // No error, but no data either (should have been caught by ErrorMessage, but good fallback)
+        {
+            <div class="alert alert-warning" role="alert">
+                Payment details could not be loaded.
+            </div>
+        }
+        else // We have payment details, display them
+        {
+            <dl class="row details-dl">
+
+                <dt class="col-md-3">Payment Reference:</dt>
+                <dd class="col-md-9">@payment.PaymentReference</dd>
+
+                <dt class="col-md-3">Status:</dt>
+                <dd class="col-md-9">
+                    <span class="badge rounded-pill @Model.GetStatusBadgeClass(payment.PaymentStatus) bg-opacity-75">
+                        @Model.GetUserFriendlyStatus(payment.PaymentStatus, payment.FromCustomerAlias, payment.ToCustomerAlias)
+                    </span>
+                </dd>
+
+                <dt class="col-md-3">From:</dt>
+                <dd class="col-md-9">
+                    @payment.FromCustomerAlias
+                    @if (!string.IsNullOrWhiteSpace(payment.FromCustomerName) && payment.FromCustomerName != payment.FromCustomerAlias)
+                    {
+                        <span class="text-muted">(@payment.FromCustomerName)</span>
+                    }
+                </dd>
+
+                <dt class="col-md-3">To:</dt>
+                <dd class="col-md-9">
+                    @payment.ToCustomerAlias
+                    @if (!string.IsNullOrWhiteSpace(payment.ToCustomerName) && payment.ToCustomerName != payment.ToCustomerAlias)
+                    {
+                        <span class="text-muted">(@payment.ToCustomerName)</span>
+                    }
+                </dd>
+
+                <dt class="col-md-3">Date:</dt> @* Using CreatedTime as per image example date/time *@
+                <dd class="col-md-9">@Model.FormatDateTime(payment.CreatedTime)</dd>
+
+                @if (payment.PostedTime != null) @* Optionally display Posted Time if available *@
+                {
+                    <dt class="col-md-3">Posted Date:</dt>
+                    <dd class="col-md-9">@Model.FormatDateTime(payment.PostedTime)</dd>
+                }
+
+
+                <dt class="col-md-3">Currency:</dt>
+                <dd class="col-md-9">
+                    <span class="fi @Model.GetFlagClass(payment.CurrencyCode) me-2"></span>
+                    @payment.CurrencyCode
+                </dd>
+
+                <dt class="col-md-3">Amount:</dt>
+                <dd class="col-md-9">
+                    @payment.AmountTextWithCommas @* Use pre-formatted text if available, or format manually *@
+                    @* Fallback: @payment.Amount.ToString("N", CultureInfo.InvariantCulture) *@
+                </dd>
+
+                @* Mapping "Invoice" from image to ExternalReference DTO field *@
+                @if (!string.IsNullOrWhiteSpace(payment.ExternalReference))
+                {
+                    <dt class="col-md-3">Invoice / Ext. Ref:</dt>
+                    <dd class="col-md-9">@payment.ExternalReference</dd>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(payment.ReasonForPayment))
+                {
+                    <dt class="col-md-3">Reason for Payment:</dt>
+                    <dd class="col-md-9">@payment.ReasonForPayment</dd>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(payment.BankMemo))
+                {
+                    <dt class="col-md-3">Memo:</dt>
+                    <dd class="col-md-9">@payment.BankMemo</dd>
+                }
+
+                @* Add other fields from InstantPaymentGetData as needed, e.g.:
+                <dt class="col-md-3">Created By:</dt>
+                <dd class="col-md-9">@payment.CreatedByName</dd>
+
+                <dt class="col-md-3">Posted By:</dt>
+                <dd class="col-md-9">@payment.PostedByName</dd>
+
+                <dt class="col-md-3">Processing Branch:</dt>
+                <dd class="col-md-9">@payment.ProcessingBranchName</dd>
+                *@
+
+                @* Placeholder for Share section - Add actual implementation later *@
+                @*
+                <dt class="col-md-3 mt-3">Share:</dt>
+                <dd class="col-md-9 mt-3">
+                    [ Share via WhatsApp / Line / Telegram etc. buttons here ]
+                </dd>
+                *@
+            </dl>
+        }
+    </div>
+    <div class="card-footer text-end">
+        <a asp-page="/History/Pay" class="btn btn-secondary">Back to History</a>
+    </div>
+</div>

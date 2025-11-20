@@ -1,0 +1,55 @@
+﻿@page
+@model Wallet.Pages.AddFunds.HistoryModel
+@{
+    ViewData["Title"] = "Deposit History";
+}
+
+<div class="card">
+    <div class="card-body">
+
+        <h4>Add Funds</h4>
+        <p>List of Deposits made</p>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Status</th>
+                    <th>Source</th>
+                    <th>Amount</th>
+                    <th>Created Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>FUND123456</td>
+                    <td class="text-success">Completed</td>
+                    <td>Bank Transfer</td>
+                    <td>1,500.00 USD</td>
+                    <td>Feb 15, 2025</td>
+                    <td><button class="btn btn-primary btn-sm">View</button></td>
+                </tr>
+                <tr>
+                    <td>FUND654321</td>
+                    <td class="text-warning">Pending</td>
+                    <td>Wire Transfer</td>
+                    <td>3,000.00 EUR</td>
+                    <td>Jan 30, 2025</td>
+                    <td><button class="btn btn-primary btn-sm">View</button></td>
+                </tr>
+                <tr>
+                    <td>FUND987654</td>
+                    <td class="text-danger">Failed</td>
+                    <td>SWIFT Payment</td>
+                    <td>500.00 THB</td>
+                    <td>Jan 10, 2025</td>
+                    <td><button class="btn btn-primary btn-sm">View</button></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <button class="btn btn-success">Upload Proof</button>
+    </div>
+    <p>The basis is: <a href="https://wallet.winstantpay.com/Funding/GetAllFundings" target="_blank">https://wallet.winstantpay.com/Funding/GetAllFundings</a></p>
+</div>

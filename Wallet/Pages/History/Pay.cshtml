@@ -1,0 +1,167 @@
+﻿@page
+@model Wallet.Pages.History.PayModel
+@{
+    ViewData["Title"] = "Payments History";
+    // Determine current user alias for amount coloring logic
+    var currentUserAlias = Model.CurrentUserAlias;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/flags.css">
+    <link rel="stylesheet" href="~/css/remixicon.css"> @* Ensure RemixIcon CSS is linked *@
+    <style>
+        /* Optional: Styling for action icons and item separators */
+        .action-icons a {
+            text-decoration: none;
+            color: var(--bs-secondary-color);
+            margin-left: 8px; /* Space between icons */
+            font-size: 1.1rem;
+        }
+
+            .action-icons a:hover {
+                color: var(--bs-primary);
+            }
+
+        .payment-item-row {
+            border-bottom: 1px solid var(--bs-border-color-translucent); /* Separator line */
+            padding-bottom: 0.75rem; /* Space before the line */
+            margin-bottom: 0.75rem; /* Space after the line */
+        }
+
+            .payment-item-row:last-child {
+                border-bottom: none; /* No line for the last item */
+                margin-bottom: 0;
+                padding-bottom: 0;
+            }
+            /* Ensure consistent vertical alignment across columns, especially on larger screens */
+            .payment-item-row > div {
+                padding-top: 0.25rem;
+                padding-bottom: 0.25rem;
+            }
+        /* Smaller text for From/To/Ref */
+        .details-text {
+            font-size: 0.85em; /* Adjust as needed */
+            line-height: 1.4;
+        }
+    </style>
+}
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">@ViewData["Title"]</h5>
+        <small class="text-muted">Recent instant payments history</small>
+    </div>
+    <div class="card-body">
+
+        @* Display Error Message if any *@
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="alert alert-danger" role="alert">
+                @Model.ErrorMessage
+            </div>
+        }
+
+        @* Check if there are payments to display *@
+        @if (Model.Payments == null || !Model.Payments.Any())
+        {
+            @if (string.IsNullOrEmpty(Model.ErrorMessage)) // Only show 'No history' if no error message is already shown
+            {
+                <p class="text-muted">No payment history found.</p>
+            }
+        }
+        else
+        {
+            @* Loop through each payment record *@
+            @foreach (var payment in Model.Payments)
+            {
+                // Determine amount color
+                bool isOutgoing = !string.IsNullOrEmpty(currentUserAlias) && payment.FromCustomerAlias == currentUserAlias;
+                bool isIncoming = !string.IsNullOrEmpty(currentUserAlias) && payment.ToCustomerAlias == currentUserAlias;
+                var amountClass = isOutgoing ? "text-danger" : (isIncoming ? "text-success" : "text-dark");
+
+                // Use Bootstrap Row for each item
+                <div class="payment-item-row row g-2 align-items-center">
+
+                    @* === Column 1: Date & Flag === *@
+                    @* Takes full width on xs, auto width on larger screens up to large, then fixed width. Centers content. *@
+                    <div class="col-12 col-lg-2 d-flex align-items-center mb-1 mb-lg-0">
+                        <span class="fi @Model.GetFlagClass(payment.CurrencyCode) w-30-px h-30-px rounded-circle flex-shrink-0 me-2 overflow-hidden"></span>
+                        <span class="fw-medium text-sm">@Model.FormatDateTime(payment.CreatedTime)</span>
+                    </div>
+
+                    @* === Column 2: From/To/Ref === *@
+                    @* Takes full width on xs, expands on larger screens. *@
+                    <div class="col-12 col-lg-5 details-text mb-1 mb-lg-0">
+                        <span class="text-secondary-light d-block">
+                            From: <span class="fw-medium">@(payment.FromCustomerAlias ?? "N/A")</span>
+                            @if (!string.IsNullOrWhiteSpace(payment.FromCustomerName) && payment.FromCustomerName != payment.FromCustomerAlias)
+                            {
+                                <span class="text-muted"> (@payment.FromCustomerName)</span>
+                            }
+                        </span>
+                        <span class="text-secondary-light d-block">
+                            To: <span class="fw-medium">@(payment.ToCustomerAlias ?? "N/A")</span>
+                            @if (!string.IsNullOrWhiteSpace(payment.ToCustomerName) && payment.ToCustomerName != payment.ToCustomerAlias)
+                            {
+                                <span class="text-muted"> (@payment.ToCustomerName)</span>
+                            }
+                        </span>
+                        @if (!string.IsNullOrWhiteSpace(payment.PaymentReference))
+                        {
+                            <span class="text-xs text-muted d-block">Ref: @payment.PaymentReference</span>
+                        }
+                    </div>
+
+                    @* === Column 3: Amount === *@
+                    @* Takes part width on xs/sm, aligns end on larger screens *@
+                    <div class="col-7 col-sm-8 col-lg-2 text-start text-lg-end fw-semibold @amountClass">
+                        @(isOutgoing ? "-" : (isIncoming ? "+" : ""))@(payment.AmountTextWithCommas ?? $"{payment.Amount:N2}") @payment.CurrencyCode
+                    </div>
+
+                    @* === Column 4: Status & Actions === *@
+                    <div class="col-5 col-sm-4 col-lg-3 text-end d-flex justify-content-end align-items-center">
+                        <span class="action-icons">
+                            <a asp-page="/History/InstantPaymentDetails" asp-route-id="@payment.PaymentId"
+                               title="View Details"
+                               aria-label="View Details for payment @payment.PaymentReference"
+                               class="btn btn-sm bg-light bg-opacity-75 me-2 py-1 px-2 small text-dark text-decoration-none"
+                               style="font-size: 0.8rem;">
+                                Details
+                            </a>
+                            @if (isOutgoing)
+                            {
+                                <a href="#"
+                                   title="Repeat Payment"
+                                   aria-label="Repeat payment @payment.PaymentReference"
+                                   class="btn btn-sm bg-info bg-opacity-75 me-2 py-1 px-2 small text-white text-decoration-none"
+                                   style="font-size: 0.8rem;">
+                                    Repeat
+                                </a>
+                            }
+                        </span>
+
+
+
+                        <span class="badge rounded-pill @Model.GetStatusBadgeClass(payment.Status) bg-opacity-75 me-2">
+                            @if (payment.Status == "Posted")
+                            {
+                                @(isIncoming ? "Received" : "Paid") @* Select text based on direction *@
+                            }
+                            else
+                            {
+                                @Model.GetUserFriendlyStatus(payment.Status) @* Use helper for Pending, Cancelled, etc. *@
+                            }
+                        </span>
+                    </div>
+                </div> @* End .row *@
+            }
+
+            @* TODO: Add Pagination Controls here if needed *@
+
+        }
+    </div>
+    <div class="card-footer text-muted text-center">
+        <small>Displaying latest @Model.Payments.Count records.</small>
+        @* Link to full history page or add pagination info here *@
+    </div>
+</div>

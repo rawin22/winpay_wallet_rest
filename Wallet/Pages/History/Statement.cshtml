@@ -1,0 +1,89 @@
+﻿@page
+@model Wallet.Pages.History.StatementModel
+
+@{
+    ViewData["Title"] = "Statement";
+}
+
+<div class="container">
+    <h1>Statement for @Model.AccountInfo.AccountCurrencyCode</h1>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Account Details</h5>
+            <p><strong>Account ID:</strong> @Model.AccountInfo.AccountId</p>
+            <p><strong>Account Number:</strong> @Model.AccountInfo.AccountNumber</p>
+            <p><strong>Account Name:</strong> @Model.AccountInfo.AccountName</p>
+            <p><strong>Currency Code:</strong> @Model.AccountInfo.AccountCurrencyCode</p>
+            <p><strong>Currency Scale:</strong> @Model.AccountInfo.AccountCurrencyScale</p>
+            <p><strong>Beginning Balance:</strong> @Model.AccountInfo.BeginningBalance.ToString("F2")</p>
+            <p><strong>Ending Balance:</strong> @Model.AccountInfo.EndingBalance.ToString("F2")</p>
+        </div>
+    </div>
+
+    <!-- Date Range Filter Form -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Filter Statement Entries</h5>
+        </div>
+        <div class="card-body">
+            <form asp-page="/History/Statement" method="get" class="row g-3">
+                <input type="hidden" asp-for="AccountId" />
+                <div class="col-md-4">
+                    <label for="StartDate" class="form-label">Start Date</label>
+                    <input type="date" class="form-control" asp-for="StartDate" value="@Model.StartDate?.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="col-md-4">
+                    <label for="EndDate" class="form-label">End Date</label>
+                    <input type="date" class="form-control" asp-for="EndDate" value="@Model.EndDate?.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary">Apply Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Statement Entries Section -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Statement Entries (@Model.StartDate?.ToString("dd MMM yyyy") - @Model.EndDate?.ToString("dd MMM yyyy"))</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.Entries.Any())
+            {
+                <div class="d-flex flex-column gap-3">
+                    @foreach (var entry in Model.Entries)
+                    {
+                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 p-3 border rounded">
+                            <div class="flex-grow-1">
+                                <h6 class="text-md mb-1">@entry.ValueDate</h6>
+                                <p class="mb-0 text-secondary-light fw-medium">@entry.EntryTypeName (@entry.ItemTypeName)</p>
+                                <p class="mb-0 text-secondary-light">@entry.ItemReference</p>
+                                <p class="mb-0 text-secondary-light">@entry.BankMemo</p>
+                            </div>
+                            <div class="text-end">
+                                <span class="text-success fw-medium d-block mb-1">@entry.AmountCredit.ToString("F2") Credit</span>
+                                <span class="text-danger fw-medium d-block">@entry.AmountDebit.ToString("F2") Debit</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">No statement entries found for this account in the selected date range.</p>
+            }
+        </div>
+    </div>
+
+    <a asp-page="/Index" class="btn btn-primary mt-3">Back to Dashboard</a>
+    <a asp-page="/Balances" class="btn btn-primary mt-3">Back to Balances</a>
+</div>

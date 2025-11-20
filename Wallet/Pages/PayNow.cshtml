@@ -1,0 +1,168 @@
+﻿@page
+@model Wallet.Pages.PayNowModel
+@{
+    ViewData["Title"] = "Pay Now";
+    // Backend Requirement: Ensure Model.AvailableCurrenciesWithBalance is populated in OnGetAsync
+}
+
+@* Display Success/Error Messages stored in TempData *@
+@if (!string.IsNullOrEmpty(Model.SuccessMessage))
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @Model.SuccessMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @Model.ErrorMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@* Display model validation errors (e.g., if required fields are missing after server-side check) *@
+<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+
+<div class="card">
+    <div class="card-body">
+
+        <h5>Pay Nows - Make New Instant Payment</h5>
+        <hr />
+
+        <form method="post">
+            @* Anti-forgery token is added automatically by form tag helper *@
+
+            @* Static QR Code buttons (functionality requires custom JS) *@
+            <div class="row mb-2 align-items-center">
+                <label class="col-sm-2 col-form-label text-end">QR CODE</label>
+                <div class="col-sm-9">
+                    <button type="button" class="btn btn-outline-secondary me-2">
+                        @* Assuming iconify-icon is loaded externally *@
+                        <iconify-icon icon="ri-qr-code-line" class="me-1"></iconify-icon> Scan
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary">
+                        <iconify-icon icon="ri-upload-line" class="me-1"></iconify-icon> Upload
+                    </button>
+                </div>
+            </div>
+
+            @* Recipient Input *@
+            <div class="row mb-2">
+                <label asp-for="Recipient" class="col-sm-2 col-form-label text-end">To <span class="text-danger">*</span></label>
+                <div class="col-sm-9">
+                    <div class="input-group">
+                        <input asp-for="Recipient" type="text" class="form-control" placeholder="Enter WPayid">
+                        <button class="btn btn-outline-primary" type="button" id="selectPriorBtn">Or Select Prior</button>
+                    </div>
+                    <span asp-validation-for="Recipient" class="text-danger d-block"></span>
+                </div>
+            </div>
+
+            @* Currency Dropdown *@
+            <div class="row mb-2">
+                <label asp-for="SelectedCurrency" class="col-sm-2 col-form-label text-end">Currency <span class="text-danger">*</span></label>
+                <div class="col-sm-9">
+                    <select asp-for="SelectedCurrency" asp-items="Model.AvailableCurrenciesWithBalance" class="form-select">
+                        @* Default option as provided by user *@
+                        <option value="">-- Select Currency & Balance --</option>
+                    </select>
+                    <span asp-validation-for="SelectedCurrency" class="text-danger d-block"></span>
+                </div>
+            </div>
+
+            @* Amount Input *@
+            <div class="row mb-2">
+                <label asp-for="Amount" class="col-sm-2 col-form-label text-end">Amount <span class="text-danger">*</span></label>
+                <div class="col-sm-9">
+                    @* Using step="any" as provided by user, suitable for crypto/high precision *@
+                    <input asp-for="Amount" type="number" step="any" class="form-control" placeholder="0.00">
+                    <span asp-validation-for="Amount" class="text-danger d-block"></span>
+                </div>
+            </div>
+
+            @* From Account Input (Readonly) *@
+            <div class="row mb-2">
+                <label asp-for="FromAccount" class="col-sm-2 col-form-label text-end">From <span class="text-danger">*</span></label>
+                <div class="col-sm-9">
+                    @* Use asp-for to bind the value from the Model set in OnGetAsync. *@
+                    <input asp-for="FromAccount" type="text" class="form-control" readonly aria-readonly="true">
+                    <span asp-validation-for="FromAccount" class="text-danger d-block"></span>
+                </div>
+            </div>
+
+            @* Invoice Input *@
+            <div class="row mb-2">
+                <label asp-for="Invoice" class="col-sm-2 col-form-label text-end">Invoice</label>
+                <div class="col-sm-9">
+                    <input asp-for="Invoice" type="text" class="form-control">
+                    <span asp-validation-for="Invoice" class="text-danger d-block"></span>
+                </div>
+            </div>
+
+            @* Reason Input *@
+            <div class="row mb-2">
+                <label asp-for="Reason" class="col-sm-2 col-form-label text-end">eal Reason for Payment</label>
+                <div class="col-sm-9">
+                    <input asp-for="Reason" type="text" class="form-control">
+                    <span asp-validation-for="Reason" class="text-danger d-block"></span>
+                </div>
+            </div>
+
+            @* Memo Input *@
+            <div class="row mb-2">
+                <label asp-for="Memo" class="col-sm-2 col-form-label text-end">Memo</label>
+                <div class="col-sm-9">
+                    <textarea asp-for="Memo" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Memo" class="text-danger d-block"></span>
+                </div>
+            </div>
+
+            <hr />
+
+            @* Submit Buttons Area *@
+            <div class="row">
+                <div class="col-sm-9 offset-sm-2">
+                    <div class="d-flex justify-content-start gap-2 mt-3">
+                        @* Button targeting OnPostCreateAsync *@
+                        <button type="submit" asp-page-handler="Create" class="btn btn-success">Create</button>
+                        @* Button targeting OnPostPayNowAsync *@
+                        <button type="submit" asp-page-handler="PayNow" class="btn btn-warning">Pay Now</button>
+                        @* Standard HTML reset button *@
+                        <button type="reset" class="btn btn-light">Reset</button>
+                    </div>
+                </div>
+            </div>
+
+        </form> @* End Form *@
+
+
+    </div> @* End card-body *@
+</div> @* End card *@
+
+@* Script block placed directly in HTML as per user's example *@
+<script>
+    // Page-specific JavaScript goes here
+    document.getElementById('selectPriorBtn')?.addEventListener('click', function() {
+        // Note: This uses alert. Consider replacing with a modal dialog for better UX.
+        alert('Select Prior functionality needs to be implemented (e.g., show a modal with contacts).');
+        // Here you would typically show a modal or fetch/display prior recipients.
+    });
+
+    // Add any other JavaScript needed for QR code buttons, etc.
+    // Example: Placeholder for QR Scan button
+    document.querySelector('button:has(iconify-icon[icon="ri-qr-code-line"])')?.addEventListener('click', function() {
+         alert('QR Code Scan functionality needs to be implemented.');
+         // Integrate with a QR scanning library or device API here.
+    });
+
+     // Example: Placeholder for QR Upload button
+     document.querySelector('button:has(iconify-icon[icon="ri-upload-line"])')?.addEventListener('click', function() {
+         alert('QR Code Upload functionality needs to be implemented.');
+         // Trigger a file input or relevant logic here.
+    });
+
+</script>
+
+@* Removed the @section Scripts block that was causing the error *@

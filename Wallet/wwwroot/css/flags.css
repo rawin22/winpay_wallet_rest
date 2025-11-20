@@ -1,0 +1,467 @@
+.flag-scale {
+    transform: scale(2.5);
+    transform-origin: top left;
+}
+
+.flag {
+    display: none;
+    background: url("/images/customCurrency/flags.png") no-repeat;
+    width: 16px;
+    height: 11px;
+}
+    /*United Arab Emirates*/
+    .flag.flag-aed {
+        background-position: -16px 0;
+        display: inline-block !important;
+    }
+    /*Armenia*/
+    .flag.flag-amd {
+        background-position: -96px 0;
+        display: inline-block !important;
+    }
+    /*Angola*/
+    .flag.flag-aoa {
+        background-position: -128px 0;
+        display: inline-block !important;
+    }
+    /*Argentina*/
+    .flag.flag-ars {
+        background-position: -144px 0;
+        display: inline-block !important;
+    }
+    /*Australia*/
+    .flag.flag-aud {
+        background-position: -192px 0;
+        display: inline-block !important;
+    }
+    /*Bangladesh*/
+    .flag.flag-bdt {
+        background-position: -16px -11px;
+        display: inline-block !important;
+    }
+    /*Bulgaria*/
+    .flag.flag-bgn {
+        background-position: -64px -11px;
+        display: inline-block !important;
+    }
+    /*Bolivia*/
+    .flag.flag-bob {
+        background-position: -160px -11px;
+        display: inline-block !important;
+    }
+    /*Brazilia*/
+    .flag.flag-brl {
+        background-position: -176px -11px;
+        display: inline-block !important;
+    }
+    /*Bitcoin*/
+    .flag.flag-btc {
+        background: url("/images/customCurrency/bitcoin.png") no-repeat;
+        width: 16px;
+        height: 12px;
+        display: inline-block !important;
+    }
+    /*DASH*/
+    .flag.flag-dash {
+        background: url("/images/customCurrency/dash.png") no-repeat;
+        width: 16px;
+        height: 12px;
+        display: inline-block !important;
+    }
+    /*DBV*/
+    .flag.flag-dbv {
+        background: url("/images/customCurrency/dbv.png") no-repeat;
+        width: 16px;
+        height: 12px;
+        display: inline-block !important;
+    }
+    /*AHO*/
+    .flag.flag-aho {
+        background: url("/images/customCurrency/aho.png") no-repeat;
+        width: 16px;
+        height: 12px;
+        display: inline-block !important;
+    }
+    /*AUT*/
+    .flag.flag-aut {
+        background: url("/images/customCurrency/aut.png") no-repeat;
+        width: 16px;
+        height: 12px;
+        display: inline-block !important;
+    }
+    /*CHF*/
+    .flag.flag-chf {
+        background: url("/images/customCurrency/chf.png") no-repeat;
+        width: 16px;
+        height: 12px;
+        display: inline-block !important;
+    }
+    /*USDT*/
+    .flag.flag-usdt {
+        background: url("/images/customCurrency/ust.png") no-repeat;
+        width: 16px;
+        height: 12px;
+        display: inline-block !important;
+    }
+    /*ZAR*/
+    .flag.flag-zar {
+        background: url("/images/customCurrency/zar.png") no-repeat;
+        width: 16px;
+        height: 12px;
+        display: inline-block !important;
+    }
+    /*RUB*/
+    .flag.flag-rub {
+        background: url("/images/customCurrency/rub.png") no-repeat;
+        width: 16px;
+        height: 12px;
+        display: inline-block !important;
+    }
+    /*TWD*/
+    .flag.flag-twd {
+        background: url("/images/customCurrency/twd.png") no-repeat;
+        width: 16px;
+        height: 12px;
+        display: inline-block !important;
+    }
+    /*SGD*/
+    .flag.flag-sgd {
+        background: url("/images/customCurrency/sgd.png") no-repeat;
+        width: 16px;
+        height: 12px;
+        display: inline-block !important;
+    }
+    /*TSLA*/
+    .flag.flag-tsla {
+        background: url("/images/customCurrency/tsla.png") no-repeat;
+        width: 16px;
+        height: 16px;
+        display: inline-block !important;
+    }
+    /*AAPL*/
+    .flag.flag-aapl {
+        background: url("/images/customCurrency/aapl.png") no-repeat;
+        width: 16px;
+        height: 16px;
+        display: inline-block !important;
+    }
+    /*HOT*/
+    .flag.flag-hot {
+        background: url("/images/customCurrency/hot.png") no-repeat;
+        width: 16px;
+        height: 16px;
+        display: inline-block !important;
+    }
+    /*NXTP*/
+    .flag.flag-nxtp {
+        background: url("/images/customCurrency/nxtp.png") no-repeat;
+        width: 16px;
+        height: 16px;
+        display: inline-block !important;
+    }
+    /*SSNLF*/
+    .flag.flag-ssnlf {
+        background: url("/images/customCurrency/ssnlf.png") no-repeat;
+        width: 16px;
+        height: 16px;
+        display: inline-block !important;
+    }
+
+    /*Butan*/
+    .flag.flag-btn {
+        background-position: -208px -11px;
+        display: inline-block !important;
+    }
+    /*Canada*/
+    .flag.flag-cad {
+        background-position: -16px -22px;
+        display: inline-block !important;
+    }
+    /*China*/
+    .flag.flag-cny {
+        background-position: -176px -22px;
+        display: inline-block !important;
+    }
+
+    .flag.flag-cnh {
+        background-position: -176px -22px;
+        display: inline-block !important;
+    }
+    /*Ethiopia*/
+    .flag.flag-etb {
+        background-position: -240px -33px;
+        display: inline-block !important;
+    }
+    /*Europe Union*/
+    .flag.flag-eur {
+        background-position: -256px -33px;
+        display: inline-block !important;
+    }
+    /*United Kingdom (clear)*/
+    .flag.flag-en {
+        background-position: -112px -44px;
+        display: inline-block !important;
+    }
+    /*United Kingdom*/
+    .flag.flag-gbp {
+        background-position: -112px -44px;
+        display: inline-block !important;
+    }
+    /*Hong Kong*/
+    .flag.flag-hkd {
+        background-position: -144px -55px;
+        display: inline-block !important;
+    }
+    /*Haiti*/
+    .flag.flag-htg {
+        background-position: -208px -55px;
+        display: inline-block !important;
+    }
+    /*Horvatia*/
+    .flag.flag-hrk {
+        background-position: -192px -55px;
+        display: inline-block !important;
+    }
+    /*Indonesia*/
+    .flag.flag-idr {
+        background-position: -256px -55px;
+        display: inline-block !important;
+    }
+    /*India*/
+    .flag.flag-inr {
+        background-position: -64px -66px;
+        display: inline-block !important;
+    }
+    /*Japan*/
+    .flag.flag-jpy {
+        background-position: -224px -66px;
+        display: inline-block !important;
+    }
+    /*Kenia*/
+    .flag.flag-kes {
+        background-position: -240px -66px;
+        display: inline-block !important;
+    }
+    /*Kyrgyztan*/
+    .flag.flag-kgs {
+        background-position: -256px -66px;
+        display: inline-block !important;
+    }
+    /*Cambodia*/
+    .flag.flag-khr {
+        background-position: 0 -77px;
+        display: inline-block !important;
+    }
+    /*South Korea*/
+    .flag.flag-krw {
+        background-position: -80px -77px;
+        display: inline-block !important;
+    }
+
+    /*Cayman Islands*/
+    .flag.flag-kyd {
+        background-position: -128px -77px;
+        display: inline-block !important;
+    }
+    /*Lebanon*/
+    .flag.flag-lbp {
+        background-position: -176px -77px;
+        display: inline-block !important;
+    }
+    /*Latvia*/
+    .flag.flag-lvl {
+        background-position: -32px -88px;
+        display: inline-block !important;
+    }
+    /*Madagaskar*/
+    .flag.flag-mga {
+        background-position: -128px -88px;
+        display: inline-block !important;
+    }
+    /*Mexia*/
+    .flag.flag-mxn {
+        background-position: -96px -99px;
+        display: inline-block !important;
+    }
+    /*Nepal*/
+    .flag.flag-npr {
+        background-position: 0 -110px;
+        display: inline-block !important;
+    }
+    /*New Zeland*/
+    .flag.flag-nzd {
+        background-position: -48px -110px;
+        display: inline-block !important;
+    }
+    /*Philippine*/
+    .flag.flag-php {
+        background-position: -144px -110px;
+        display: inline-block !important;
+    }
+    /*Thailand*/
+    .flag.flag-thb {
+        background-position: -16px -143px;
+        display: inline-block !important;
+    }
+    /*Tanzania*/
+    .flag.flag-tzs {
+        background-position: -208px -143px;
+        display: inline-block !important;
+    }
+    /*Tunisia*/
+
+    .flag.flag-tnd {
+        background-position: -112px -143px;
+        display: inline-block !important;
+    }
+    /*Ukraine*/
+    .flag.flag-uah {
+        background-position: -224px -143px;
+        display: inline-block !important;
+    }
+    /*Uganda*/
+    .flag.flag-ugx {
+        background-position: -240px -143px;
+        display: inline-block !important;
+    }
+    /*US*/
+    .flag.flag-usd {
+        background-position: 0 -154px;
+        display: inline-block !important;
+    }
+    /*Vietnam*/
+    .flag.flag-vnd {
+        background-position: -128px -154px;
+        display: inline-block !important;
+    }
+    /*Anguila*/
+    .flag.flag-xcd {
+        background-position: -64px 0;
+        display: inline-block !important;
+    }
+    /*Zambia*/
+    .flag.flag-zmw {
+        background-position: -16px -165px;
+        display: inline-block !important;
+    }
+    /*France (clear)*/
+    .flag.flag-fr {
+        background-position: -80px -44px;
+        display: inline-block !important;
+    }
+
+    /*Russia (clear)*/
+    .flag.flag-ru {
+        background-position: -96px -121px;
+        display: inline-block !important;
+    }
+
+    /*Philippine (clear)*/
+    .flag.flag-enp {
+        background-position: -144px -110px;
+        display: inline-block !important;
+    }
+
+    .flag.flag-igo {
+        background: url("/images/customCurrency/igo.png") no-repeat;
+        width: 16px;
+        height: 16px;
+        display: inline-block !important;
+    }
+
+    .flag.flag-ozt {
+        background: url("/images/customCurrency/ozt.png") no-repeat;
+        width: 16px;
+        height: 16px;
+        display: inline-block !important;
+    }
+
+    .flag.flag-wpy {
+        background: url("/images/customCurrency/wpy.png") no-repeat;
+        width: 16px;
+        height: 16px;
+        display: inline-block !important;
+    }
+
+    .flag.flag-winstantpay {
+        background: url("/images/customCurrency/wpy.png") no-repeat;
+        width: 16px;
+        height: 16px;
+        display: inline-block !important;
+    }
+
+    .flag.flag-pipit {
+        background: url("/images/customCurrency/pipit.png") no-repeat;
+        width: 65px;
+        height: 16px;
+        display: inline-block !important;
+    }
+
+    .flag.flag-eth {
+        background: url("/images/customCurrency/etherium.png") no-repeat;
+        width: 16px;
+        height: 16px;
+        display: inline-block !important;
+    }
+
+    .flag.flag-xau {
+        background: url("/images/customCurrency/xau.png") no-repeat;
+        width: 16px;
+        height: 16px;
+        display: inline-block !important;
+    }
+
+    .flag.flag-420 {
+        background: url("/images/customCurrency/420.png") no-repeat;
+        width: 16px;
+        height: 16px;
+        display: inline-block !important;
+    }
+
+    .flag.flag-bts {
+        background: url("/images/customCurrency/bts.png") no-repeat;
+        width: 16px;
+        height: 16px;
+        display: inline-block !important;
+    }
+
+    .flag.flag-mil {
+        background: url("/images/customCurrency/mil.png") no-repeat;
+        width: 16px;
+        height: 16px;
+        display: inline-block !important;
+    }
+
+    .flag.flag-wkyc {
+        background: url("/images/customCurrency/wkyc.png") no-repeat;
+        width: 16px;
+        height: 16px;
+        display: inline-block !important;
+    }
+
+    .flag.flag-crd {
+        background: url("/images/customCurrency/crd.png") no-repeat;
+        width: 16px;
+        height: 16px;
+        display: inline-block !important;
+    }
+
+    .flag.flag-kmb {
+        background-position: -32px -77px;
+        display: inline-block !important;
+    }
+
+    .flag.flag-lak {
+        background-position: -160px -77px;
+        display: inline-block !important;
+    }
+
+    .flag.flag-isk {
+        background-position: -128px -66px;
+        display: inline-block !important;
+    }
+
+    .flag.flag-mmk {
+        background-position: -192px -88px;
+        display: inline-block !important;
+    }

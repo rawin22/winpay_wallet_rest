@@ -1,0 +1,30 @@
+﻿@model Wallet.Pages.Shared.Components.FxCardsModel
+
+@{
+
+}
+
+
+<div class="d-flex align-items-center justify-content-between gap-8 pb-24 border-bottom">
+    <h6 class="text-lg mb-0">Prior Deals</h6>
+</div>
+
+@foreach (var deal in Model.FxDeals)
+{
+    <div>
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-8 py-16 border-bottom">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1 d-flex flex-column">
+                    <span class="text-md mb-0 fw-medium text-primary-light d-block">@deal.FXDealReference</span>
+                    <span class="text-xs mb-0 fw-normal text-secondary-light"> @deal.DealDate </span>
+                </div>
+            </div>
+            <div class=" d-flex flex-column">
+                <span class="text-md mb-0 fw-medium text-primary-light d-block">Buy: @deal.BuyAmountTextWithCurrencyCode </span>
+                <span class="text-xs mb-0 fw-normal text-secondary-light">Sell: @deal.SellAmountTextWithCurrencyCode</span>
+            </div>
+        </div>
+
+
+    </div>
+}

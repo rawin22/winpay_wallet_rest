@@ -1,0 +1,218 @@
+﻿@page
+@model Wallet.Pages.ConvertAndExchangeModel
+@{
+    ViewData["Title"] = "Exchange";
+}
+
+@* Styles section remains the same *@
+@section Styles {
+    <link rel="stylesheet" href="~/css/flags.css">
+    <link rel="stylesheet" href="~/css/remixicon.css">
+    <style>
+        /* Reusing styles from Pay.cshtml for consistency */
+        .action-icons a {
+            text-decoration: none;
+            color: var(--bs-secondary-color);
+            margin-left: 8px;
+            font-size: 1.1rem;
+        }
+
+            .action-icons a:hover {
+                color: var(--bs-primary);
+            }
+
+        .history-item-row {
+            border-bottom: 1px solid var(--bs-border-color-translucent);
+            padding-bottom: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+            .history-item-row:last-child {
+                border-bottom: none;
+                margin-bottom: 0;
+                padding-bottom: 0;
+            }
+
+            .history-item-row > div {
+                padding-top: 0.25rem;
+                padding-bottom: 0.25rem;
+            }
+
+        .details-text {
+            font-size: 0.85em;
+            line-height: 1.4;
+        }
+
+        .conversion-leg {
+            display: flex;
+            align-items: center;
+        }
+
+            .conversion-leg .fi {
+                margin-right: 0.5rem;
+                flex-shrink: 0;
+            }
+    </style>
+}
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">@ViewData["Title"]</h5>
+        <small class="text-muted">Get live quote and convert currency</small>
+    </div>
+    <div class="card-body">
+
+        @* Display Success Message if any *@
+        @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+        {
+            <div class="alert alert-success mt-2" role="alert">@Model.SuccessMessage</div>
+        }
+        @* Display Error Message if any *@
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="alert alert-warning mt-2" role="alert">@Model.ErrorMessage</div>
+        }
+
+
+        @* *** Handler name reverted to Quote *** *@
+        <form class="d-flex flex-wrap align-items-end gap-3 mb-4"
+              method="post" asp-page-handler="Quote" asp-antiforgery="true">
+
+            <div class="d-flex flex-column">
+                <label class="form-label mb-1" for="fromCurrency">From</label>
+                <select id="fromCurrency" name="FromCcy" class="form-select form-select-sm" required>
+                    @foreach (var b in Model.NonZeroBalances)
+                    {
+                        <option value="@b.CurrencyCode">@($"{b.CurrencyCode} {b.BalanceAvailable:N8}")</option>
+                    }
+                </select>
+            </div>
+
+            <div class="d-flex flex-column">
+                <label class="form-label mb-1" for="toCurrency">To</label>
+                <select id="toCurrency" name="ToCcy" class="form-select form-select-sm" required>
+                    <option value="" disabled selected>– Select –</option>
+                    @foreach (var ccy in Model.Balances.Select(b => b.CurrencyCode).Distinct().OrderBy(c => c))
+                    {
+                        <option value="@ccy">@ccy</option>
+                    }
+                </select>
+            </div>
+
+            <div class="d-flex flex-column">
+                <label class="form-label mb-1" for="amount">Amount</label>
+                <div class="d-flex">
+                    <input id="amount" name="Amount" type="number" class="form-control form-control-sm me-1"
+                           min="0.00000001" step="any" placeholder="0.00" required style="min-width: 100px;" />
+                    <select id="amountCcy" name="AmountCcy" class="form-select form-select-sm w-auto" required></select>
+                </div>
+            </div>
+
+            <div class="align-self-end">
+                <button class="btn btn-primary btn-sm" type="submit">Get Quote</button>
+            </div>
+        </form>
+
+        @if (Model.Quote != null)
+        {
+            <hr class="my-4" />
+            <h5>Quote Details</h5>
+            <div class="mb-2">
+                @* Using default formatting N2/N5 - ADJUST IF Scale properties exist on Model.Quote *@
+                <strong>Sell:</strong> @($"{Model.Quote.SellAmount:N2} {Model.Quote.SellCurrencyCode}")<br />
+                <strong>Buy :</strong> @($"{Model.Quote.BuyAmount:N2} {Model.Quote.BuyCurrencyCode}")
+            </div>
+            <div class="mb-2">
+                <strong>Rate:</strong> @($"{Model.Quote.Rate:N5} {Model.Quote.Symbol}")
+            </div>
+
+            <div class="progress mb-1" style="height:18px;">
+                <div id="quoteBar" class="progress-bar bg-info" role="progressbar" style="width: 100%;"></div>
+            </div>
+            <div class="text-center mb-3"><span id="quoteTimer">@Model.SecondsToExpiry</span> seconds remaining</div>
+
+            @* *** Handler name reverted to Transfer *** *@
+            <form method="post" asp-page-handler="Transfer" class="d-flex gap-2">
+                <input type="hidden" name="QuoteId" value="@Model.Quote.QuoteId" />
+                @* Changed button text back to Transfer to align with handler *@
+                <button type="submit" class="btn btn-success flex-grow-1" disabled="@(Model.SecondsToExpiry <= 0)">Transfer</button>
+                <a asp-page="/ConvertAndExchange" class="btn btn-danger flex-grow-1">Cancel</a>
+            </form>
+        }
+
+    </div> @* End card-body *@
+</div> @* End card *@
+
+@* *** Scripts are placed here directly, NOT in a @section *** *@
+<script>
+    // JavaScript remains the same as the last version provided
+    function refreshAmountCcy() {
+        const fromSelect = document.getElementById('fromCurrency');
+        const toSelect = document.getElementById('toCurrency');
+        const amountCcySelect = document.getElementById('amountCcy');
+
+        if (!fromSelect || !toSelect || !amountCcySelect) { console.error("Currency dropdown element not found"); return; }
+
+        const fromVal = fromSelect.value;
+        const toVal = toSelect.value;
+        const prevVal = amountCcySelect.value;
+        amountCcySelect.innerHTML = '';
+
+        const currencies = new Set();
+        if (fromVal) currencies.add(fromVal);
+        if (toVal && toVal !== fromVal && toVal !== "") currencies.add(toVal);
+
+        if (currencies.size === 0) {
+            amountCcySelect.disabled = true;
+            const opt = document.createElement('option');
+            opt.textContent = '-'; opt.value = '';
+            amountCcySelect.appendChild(opt);
+            return;
+        }
+        amountCcySelect.disabled = false;
+
+        currencies.forEach(ccy => {
+            const opt = document.createElement('option');
+            opt.textContent = opt.value = ccy;
+            amountCcySelect.appendChild(opt);
+        });
+
+        if ([...currencies].includes(prevVal)) { amountCcySelect.value = prevVal; }
+        else if (amountCcySelect.options.length > 0) { amountCcySelect.value = fromVal; }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const fromSelect = document.getElementById('fromCurrency');
+        const toSelect = document.getElementById('toCurrency');
+        if (fromSelect) fromSelect.addEventListener('change', refreshAmountCcy);
+        if (toSelect) toSelect.addEventListener('change', refreshAmountCcy);
+        refreshAmountCcy();
+
+        const quoteTimerSpan = document.getElementById('quoteTimer');
+        if (quoteTimerSpan) {
+            let totalSec = Number(quoteTimerSpan.textContent || '0');
+            if (totalSec > 0) {
+                let remaining = totalSec;
+                const bar = document.getElementById('quoteBar');
+                const confirmButton = document.querySelector('form[asp-page-handler="Transfer"] button[type="submit"]'); // Corrected selector
+
+                const updateTimer = () => {
+                    quoteTimerSpan.textContent = remaining;
+                    if (bar) bar.style.width = Math.max(0, (remaining / totalSec) * 100) + '%';
+                    if (remaining <= 0) {
+                        clearInterval(iv);
+                        if (bar) bar.classList.replace('bg-info', 'bg-secondary');
+                        if (confirmButton) confirmButton.disabled = true;
+                        quoteTimerSpan.textContent = "Expired";
+                    } else { if (confirmButton) confirmButton.disabled = false; }
+                };
+                updateTimer();
+                const iv = setInterval(() => { remaining--; updateTimer(); }, 1000);
+            } else {
+                 const confirmButton = document.querySelector('form[asp-page-handler="Transfer"] button[type="submit"]'); // Corrected selector
+                 if (confirmButton) confirmButton.disabled = true;
+                 if (totalSec <= 0 && document.getElementById('quoteBar')) { quoteTimerSpan.textContent = "Expired"; }
+            }
+        }
+    });
+</script>

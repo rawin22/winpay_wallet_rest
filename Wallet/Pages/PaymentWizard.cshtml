@@ -1,0 +1,222 @@
+﻿@page
+@model Wallet.Pages.PaymentWizardModel
+@{
+    ViewData["Title"] = "Payment Wizard";
+}
+
+<div class="container">
+    <h1>Payment Wizard</h1>
+
+    <div class="row">
+        <div class="col-md-6">
+            <form method="post">
+                @* Use hidden input for anti-forgery token if needed, or rely on form tag helper *@
+                @* @Html.AntiForgeryToken() *@
+
+                @* --- Destination Country --- *@
+                <div class="mb-3">
+                    @* Label now points to the Code property *@
+                    <label asp-for="DestinationCountryCode" class="form-label">Destination Country:</label>
+                    @* Select binds to the Code, uses the SelectList from the Model *@
+                    <select asp-for="DestinationCountryCode" id="DestinationCountryCode" class="form-select" asp-items="Model.CountryOptions">
+                        <option value="">-- Select Country --</option>
+                    </select>
+                    @* Validation message points to the Code property *@
+                    <span asp-validation-for="DestinationCountryCode" class="text-danger"></span>
+                </div>
+
+                @* --- Remitting Currency and Amount --- *@
+                <div class="mb-3">
+                    @* Label now points to the Code property *@
+                    <label asp-for="RemittingCurrencyCode" class="form-label">Remitting Currency and Amount:</label>
+                    <div class="input-group">
+                        @* Select binds to the Code, uses the SelectList from the Model *@
+                        <select asp-for="RemittingCurrencyCode" id="RemittingCurrencyCode" class="form-select" asp-items="Model.RemittingCurrencyOptions">
+                            <option value="">-- Select Currency --</option>
+                        </select>
+                        @* Input binds to the Amount property *@
+                        <input asp-for="RemittingAmount" class="form-control" placeholder="Amount" />
+                    </div>
+                    @* Validation messages point to the Code and Amount properties *@
+                    <span asp-validation-for="RemittingCurrencyCode" class="text-danger"></span>
+                    <span asp-validation-for="RemittingAmount" class="text-danger"></span>
+                </div>
+
+                @* --- From Account Currency and Balance --- *@
+                <div class="mb-3">
+                    @* Label now points to the Code property *@
+                    <label asp-for="FromAccountCurrencyCode" class="form-label">From Account: Currency and Balance</label>
+                    <div class="input-group">
+                        @* Select binds to the Code, uses the SelectList from the Model (which includes balance in Text) *@
+                        <select asp-for="FromAccountCurrencyCode" id="FromAccountCurrencyCode" class="form-select" asp-items="Model.FromAccountCurrencyOptions">
+                            <option value="">-- Select Account Currency --</option>
+                        </select>
+                        @* Display balance separately, not using asp-for as it's read-only display info *@
+                        @* <input type="text" value="@Model.FromAccountBalance.ToString("N2")" class="form-control" readonly /> *@
+                        @* Or display within the SelectList Text property as configured in PageModel *@
+                    </div>
+                    @* Validation message points to the Code property *@
+                    <span asp-validation-for="FromAccountCurrencyCode" class="text-danger"></span>
+                </div>
+
+                @* --- Equivalent Amount Input --- *@
+                <div class="mb-3">
+                    @* Label should perhaps be dynamic based on selected currencies *@
+                    <label asp-for="EquivalentAmount" class="form-label">Or: Equivalent Amount in Funding Currency</label>
+                    <input asp-for="EquivalentAmount" class="form-control" placeholder="Funding Amount" />
+                    <span asp-validation-for="EquivalentAmount" class="text-danger"></span>
+                    @* TODO: Add logic (likely JS) to show/hide this based on currency selections *@
+                </div>
+
+                @* --- Payment Date --- *@
+                <div class="mb-3">
+                    <label asp-for="PaymentDate" class="form-label">Payment Date:</label>
+                    <input asp-for="PaymentDate" class="form-control" type="date" />
+                    <span asp-validation-for="PaymentDate" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Next</button>
+            </form>
+        </div>
+
+        @* --- Country Information Box --- *@
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Country Information</div>
+                <div class="card-body" id="countryInfoCardBody">
+                    @* Added ID for easier JS targeting *@
+                    @if (!string.IsNullOrEmpty(Model.SelectedCountryInfo))
+                    {
+                        @Html.Raw(Model.SelectedCountryInfo) @* Use Html.Raw to render HTML memo *@
+                    }
+                    else
+                    {
+                        <p>Select a destination country to view payment information.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get references to elements
+        const destinationCountrySelect = document.getElementById('DestinationCountryCode');
+        const remittingCurrencySelect = document.getElementById('RemittingCurrencyCode'); // Assuming this ID exists
+        const fromAccountCurrencySelect = document.getElementById('FromAccountCurrencyCode'); // Assuming this ID exists
+        const cardBody = document.getElementById('countryInfoCardBody');
+        const equivalentAmountDiv = document.querySelector('#EquivalentAmount')?.closest('.mb-3'); // Find the div containing the equivalent amount
+
+
+        // --- Function to update Country Info Box and Default Currency ---
+        function updateCountryInfo() {
+            var selectedCountryCode = destinationCountrySelect.value;
+
+            if (selectedCountryCode) {
+                // Show loading state?
+                 cardBody.innerHTML = '<p>Loading country information...</p>';
+
+                fetch(`/PaymentWizard?handler=CountryInfo&destinationCountryCode=${encodeURIComponent(selectedCountryCode)}`) // Use correct parameter name
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                     })
+                    .then(data => {
+                        if (data.info) {
+                            cardBody.innerHTML = data.info; // Use innerHTML because memo contains HTML
+                        } else {
+                             cardBody.innerHTML = '<p>Could not load country information.</p>';
+                        }
+
+                        // Set default remitting currency based on API response
+                        if (data.defaultCurrency && remittingCurrencySelect) {
+                             // Check if the default currency exists as an option
+                             let optionExists = Array.from(remittingCurrencySelect.options).some(opt => opt.value === data.defaultCurrency);
+                             if(optionExists) {
+                                 remittingCurrencySelect.value = data.defaultCurrency;
+                                 console.log(`Set remitting currency to default: ${data.defaultCurrency}`);
+                             } else {
+                                  console.warn(`Default currency ${data.defaultCurrency} not found in RemittingCurrency options.`);
+                                  // Optionally select the first available currency or leave as is
+                                  // remittingCurrencySelect.selectedIndex = 0; // Select "-- Select Currency --"
+                             }
+                             // Trigger change event on remitting currency to update equivalent amount visibility
+                             remittingCurrencySelect.dispatchEvent(new Event('change'));
+                         } else {
+                             console.warn('No default currency provided by API or remitting currency dropdown not found.');
+                         }
+                    })
+                    .catch(error => {
+                        cardBody.innerHTML = '<p>Error loading country information.</p>';
+                        console.error('Error fetching country info:', error);
+                    });
+            } else {
+                cardBody.innerHTML = '<p>Select a destination country to view payment information.</p>';
+                // Reset remitting currency if country is deselected?
+                 // remittingCurrencySelect.selectedIndex = 0;
+            }
+        }
+
+         // --- Function to update Equivalent Amount visibility ---
+         function toggleEquivalentAmount() {
+             if (!remittingCurrencySelect || !fromAccountCurrencySelect || !equivalentAmountDiv) {
+                 console.warn('Cannot toggle equivalent amount: elements not found.');
+                 return;
+             }
+
+             const remittingCcy = remittingCurrencySelect.value;
+             const fromCcy = fromAccountCurrencySelect.value;
+
+             // Show the "EquivalentAmount" field only if both currencies are selected and they are different
+             if (remittingCcy && fromCcy && remittingCcy !== fromCcy) {
+                 equivalentAmountDiv.style.display = ''; // Show element
+             } else {
+                 equivalentAmountDiv.style.display = 'none'; // Hide element
+             }
+         }
+
+        // --- Initial Setup and Event Listeners ---
+
+        // Add event listener for country change
+        if (destinationCountrySelect) {
+            destinationCountrySelect.addEventListener('change', updateCountryInfo);
+            // Optional: Call once on load if a default country is already selected by the model
+            if (destinationCountrySelect.value) {
+                 // updateCountryInfo(); // Already handled by initial rendering of Model.SelectedCountryInfo
+            }
+        } else {
+             console.error("Destination Country select element not found.");
+        }
+
+         // Add event listeners for currency changes to toggle equivalent amount
+         if (remittingCurrencySelect) {
+             remittingCurrencySelect.addEventListener('change', toggleEquivalentAmount);
+         }
+         if (fromAccountCurrencySelect) {
+            fromAccountCurrencySelect.addEventListener('change', toggleEquivalentAmount);
+         }
+
+          // Initial call to set visibility based on default selections
+         toggleEquivalentAmount();
+
+
+        // TODO: Add logic to update FromAccountBalance display when FromAccountCurrencyCode changes
+         if(fromAccountCurrencySelect) {
+             fromAccountCurrencySelect.addEventListener('change', function() {
+                 // Find the selected option's text which contains the balance
+                 const selectedOptionText = this.options[this.selectedIndex].text;
+                 console.log("From Account selected: ", selectedOptionText);
+                 // You might want to display this balance somewhere, or just rely on the dropdown text
+                 // Example: Update a dedicated span:
+                 // const balanceDisplaySpan = document.getElementById('fromAccountBalanceSpan');
+                 // if(balanceDisplaySpan) {
+                 //    balanceDisplaySpan.textContent = selectedOptionText; // Or parse the balance out if needed
+                 // }
+             });
+         }
+
+    });
+</script>

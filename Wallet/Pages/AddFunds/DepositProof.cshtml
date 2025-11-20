@@ -1,0 +1,62 @@
+﻿@page
+@model Wallet.Pages.AddFunds.DepositProofModel
+@{
+    ViewData["Title"] = "Upload Deposit Proof";
+}
+
+<div class="card">
+    <div class="card-body">
+        @* <p>Upload proof document</p> *@
+
+        <div class="form-group">
+            <label for="currency">Receiving Bank and Currency <span class="text-danger">*</span></label>
+            <select class="form-control" id="currency">
+                <option>Select Currency and Bank</option>
+                <option>USD - Bank of America</option>
+                <option>EUR - Deutsche Bank</option>
+                <option>THB - Bangkok Bank</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="amount">Amount <span class="text-danger">*</span></label>
+            <input type="number" class="form-control" id="amount" value="0">
+        </div>
+
+        <div class="form-group">
+            <label for="paymentDate">Payment Date <span class="text-danger">*</span></label>
+            <input type="date" class="form-control" id="paymentDate">
+        </div>
+
+        <div class="form-group">
+            <label for="senderName">Name of sender if different from yourself <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="senderName" value="Ralf Hundertmark">
+        </div>
+
+        <div class="form-group">
+            <label for="sendingBank">Name of Sending Bank</label>
+            <input type="text" class="form-control" id="sendingBank">
+        </div>
+
+        <div class="form-group">
+            <label for="referenceNumber">Account Number / Reference Number (last 4 digits) <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="referenceNumber">
+        </div>
+
+        <div class="form-group">
+            <label for="otherInfo">Other Information</label>
+            <input type="text" class="form-control" id="otherInfo">
+        </div>
+
+        <div class="form-group">
+            <label for="fileUpload">Attach Image</label>
+            <input type="file" class="form-control" id="fileUpload">
+        </div>
+
+        <div class="d-flex mt-3">
+            <button class="btn btn-success mr-2">Save</button>
+            <button class="btn btn-success">Deposit History</button>
+        </div>
+    </div>
+    <p>The basis is: <a href="https://wallet.winstantpay.com/Funding/AddFundsWire" target="_blank">https://wallet.winstantpay.com/Funding/AddFundsWire</a></p>
+</div>

@@ -1,0 +1,57 @@
+﻿@page
+@model Wallet.Pages.UserProfile.CurrencySettingsModel
+@{
+    ViewData["Title"] = "Currency Settings";
+}
+@section Styles {
+    <link rel="stylesheet" href="/css/flags.css">
+}
+
+<div class="card">
+    <div class="card-body">
+        <p>Below you can select currencies to show/hide in the Instant Payment form. This will not delete currency.</p>
+
+        <table class="table bordered-table sm-table mb-0">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Currency Code</th>
+                    <th>Currency Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var currency in Model.Currencies)
+                {
+                    var isFavorite = Model.FavoriteCurrencies.Contains(currency.CurrencyCode);
+                    <tr>
+                        <td>
+                            <a href="#" class="star-icon" data-code="@currency.CurrencyCode">
+                                <i class="bi @(isFavorite ? "bi-star-fill" : "bi-star")"></i>
+                            </a>
+                        </td>
+                        @* <td>@currency.CurrencyCode</td> *@
+                        <td>
+                            <span class="flag flag-@currency.CurrencyCode.ToLower()"></span> <!-- ✅ Correct way to show flag -->
+                            @currency.CurrencyCode
+                        </td>
+                        <td>@currency.CurrencyName</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".star-icon").forEach(star => {
+            star.addEventListener("click", function (event) {
+                event.preventDefault();
+                let starElement = event.currentTarget.querySelector("i");
+
+                // Toggle only the star visually (No API call)
+                starElement.classList.toggle("bi-star-fill");
+                starElement.classList.toggle("bi-star");
+            });
+        });
+    });
+</script>

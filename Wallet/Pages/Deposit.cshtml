@@ -1,0 +1,32 @@
+﻿@page
+@model Wallet.Pages.DepositModel
+@{
+    ViewData["Title"] = "Deposit";
+}
+
+
+<div class="card">
+    <div class="card-body">
+        <h5>Show QR code to Agent</h5>
+
+        <div class="form-group">
+            <label for="wpayId">Select WPayId <span class="text-danger">*</span></label>
+            <select class="form-control" id="wpayId">
+                <option>ralf@winstantpay.com</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="currency">Currency</label>
+            <input type="text" class="form-control" id="currency" value="🇺🇸 0 USD US Dollars" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="amount">Amount</label>
+            <input type="number" class="form-control" id="amount" value="0">
+        </div>
+
+        <button class="btn btn-primary">Generate QR Code</button>
+    </div>
+    <p>The basis is: <a href="https://wallet.winstantpay.com/Deposit/Index" target="_blank">https://wallet.winstantpay.com/Deposit/Index</a></p>
+</div>

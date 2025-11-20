@@ -1,0 +1,43 @@
+﻿@page
+@model Wallet.Pages.UserProfile.ProfileModel
+@{
+    ViewData["Title"] = "User Profile / KYC Status";
+}
+
+<div class="card">
+    <div class="card-body">
+
+        <div class="form-group">
+            <label for="userId">User ID</label>
+            <input type="text" class="form-control" id="userId" value="U123456789" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="fullName">Full Name</label>
+            <input type="text" class="form-control" id="fullName" value="John Doe" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" value="johndoe@example.com" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="phone">Phone</label>
+            <input type="text" class="form-control" id="phone" value="+1 234 567 890" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="kycStatus">KYC Status</label>
+            <input type="text" class="form-control text-success" id="kycStatus" value="Verified" readonly>
+        </div>
+
+        <h4 class="mt-4">Account Actions</h4>
+
+        <div class="d-flex">
+            <button class="btn btn-warning mr-2">Edit Profile</button>
+            <button class="btn btn-danger">Request KYC Update</button>
+        </div>
+    </div>
+    <p>The basis is: <a href="https://wallet.winstantpay.com/User/Profile" target="_blank">https://wallet.winstantpay.com/User/Profile</a></p>
+</div>

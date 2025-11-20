@@ -1,0 +1,38 @@
+﻿@page
+@model Wallet.Pages.AddFunds.BankModel
+@{
+    ViewData["Title"] = "Add Funds via Bank Account";
+}
+
+<div class="card">
+    <div class="card-body">
+        <p>Please select the currency and the bank to print out pay-in instructions.</p>
+
+        <div class="form-group">
+            <label for="currency">CCY</label>
+            <select class="form-control" id="currency">
+                <option>Select Currency and Bank</option>
+                <option>USD - Bank of America</option>
+                <option>EUR - Deutsche Bank</option>
+                <option>THB - Bangkok Bank</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Pay-In Instructions</label>
+            <br>
+            <button class="btn btn-outline-secondary">
+                <iconify-icon icon="ri-printer-line"></iconify-icon> Print
+            </button>
+            <button class="btn btn-outline-secondary">
+                <iconify-icon icon="ri-file-copy-line"></iconify-icon> Copy
+            </button>
+        </div>
+
+        <div class="d-flex mt-3">
+            <button class="btn btn-success mr-2">Upload Proof</button>
+            <button class="btn btn-success">Deposit History</button>
+        </div>
+    </div>
+    <p>The basis is: <a href="https://wallet.winstantpay.com/Funding/AddBankDeposit" target="_blank">https://wallet.winstantpay.com/Funding/AddBankDeposit</a></p>
+</div>

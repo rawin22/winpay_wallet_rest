@@ -1,0 +1,104 @@
+﻿@page
+@model Wallet.Pages.UserProfile.LiquidationPreferencesModel
+@{
+    ViewData["Title"] = "Liquidation Preferences";
+}
+
+<form method="post" onsubmit="collectUsedCurrencies()">
+    <div class="card">
+        <div class="card-body">
+            <p>Overdraft user list</p>
+
+            <div class="row">
+                <!-- Used -->
+                <div class="col-md-6">
+                    <h5>Currencies Used in Auto‑Exchange</h5>
+                    <div id="usedCurrencies"
+                         class="border p-3 bg-light"
+                         ondrop="drop(event,'usedCurrencies')"
+                         ondragover="allowDrop(event)">
+                        @foreach (var cur in Model.UsedCurrencies)
+                        {
+                            <div class="currency" draggable="true" ondragstart="drag(event)">
+                                @cur.CurrencyCode
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Not used -->
+                <div class="col-md-6">
+                    <h5>Currencies Not Used in Auto‑Exchange</h5>
+                    <div id="notUsedCurrencies"
+                         class="border p-3 bg-warning"
+                         ondrop="drop(event,'notUsedCurrencies')"
+                         ondragover="allowDrop(event)">
+                        @foreach (var cur in Model.NotUsedCurrencies)
+                        {
+                            <div class="currency" draggable="true" ondragstart="drag(event)">
+                                @cur.CurrencyCode
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <input type="hidden" asp-for="UsedCurrencyCodes" />
+
+            <div class="d-flex mt-3">
+                <button type="submit" class="btn btn-primary mr-2">Save Preferences</button>
+                <button type="reset" class="btn btn-secondary">Reset</button>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="text-danger mt-2">@Model.ErrorMessage</div>
+            }
+        </div>
+    </div>
+</form>
+
+<script>
+    /* keep a reference to the element being dragged */
+    let draggedElem = null;
+
+    function allowDrop(ev) {
+        ev.preventDefault();            // <- must call to allow the drop
+    }
+
+    function drag(ev) {
+        draggedElem = ev.target;        // remember original element
+        ev.dataTransfer.effectAllowed = "move";
+    }
+
+    function drop(ev, targetId) {
+        ev.preventDefault();
+
+        const container = document.getElementById(targetId);
+        if (!container || !draggedElem) return;
+
+        container.appendChild(draggedElem); // move element
+        draggedElem = null;                 // reset
+    }
+
+    /* gather current order before POST */
+    function collectUsedCurrencies() {
+        const codes = Array
+            .from(document.querySelectorAll('#usedCurrencies .currency'))
+            .map(d => d.textContent.trim());
+        document.querySelector('[name="UsedCurrencyCodes"]').value =
+            codes.join(',');
+    }
+</script>
+
+
+<style>
+    .currency {
+        padding: 8px;
+        margin: 5px;
+        border: 1px solid #ccc;
+        background: #444;
+        color: white;
+        cursor: grab;
+    }
+</style>
