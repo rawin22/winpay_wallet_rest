@@ -19,15 +19,19 @@ public class UserSettingsData
     public int OrganizationTypeId { get; set; } 
     public string OrganizationName { get; set; } 
     public Guid BankId { get; set; } 
+    public string BankHomePageMessage { get; set; } 
     public Guid BranchId { get; set; }
     public string BranchName { get; set; }  
     public string BranchCountryCode { get; set; }
+    public Guid? DefaultStealthId { get; set; }
     public bool BelongsToWhiteLabelBranch { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Phone { get; set; }
     public string Fax { get; set; }
     public string WKYCId { get; set; }
+    public int? CustomerWKYCLevel { get; set; } = null;
+    public int? CustomerTrustScore { get; set; } = null;
     public string PreferredLanguage { get; set; }
     public string CultureCode { get; set; }
     public int CultureId { get; set; }

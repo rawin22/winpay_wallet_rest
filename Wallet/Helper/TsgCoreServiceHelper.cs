@@ -22,6 +22,13 @@ namespace Wallet.Helper
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IJSRuntime _jsRuntime;
 
+        // Shared JSON serializer options for all API calls
+        private static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: true) }
+        };
+
         public TsgCoreServiceHelper(IHttpContextAccessor httpContextAccessor, ILogger<TsgCoreServiceHelper> logger, AuthenticationStateProvider authenticationStateProvider, HttpClient http, IConfiguration configuration, IJSRuntime jsRuntime)
         {
             _logger = logger;
@@ -74,8 +81,9 @@ namespace Wallet.Helper
                 statusCode,
                 serializedHeaders
             );
+
             // Deserialize the response content to AuthenticateResponse type
-            AuthenticateResponse response = await httpResponse.Content!.ReadFromJsonAsync<AuthenticateResponse>()
+            AuthenticateResponse response = await httpResponse.Content!.ReadFromJsonAsync<AuthenticateResponse>(_jsonOptions)
                 ?? throw new InvalidOperationException("The response content is null or cannot be deserialized.");
 
             // Check if the deserialized response is not null
@@ -106,7 +114,7 @@ namespace Wallet.Helper
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
-                var authResponse = JsonSerializer.Deserialize<AuthenticateResponse>(responseContent);
+                var authResponse = JsonSerializer.Deserialize<AuthenticateResponse>(responseContent, _jsonOptions);
                 if (authResponse == null)
                 {
                     _logger.LogError("Failed to deserialize the refresh token response.");
@@ -277,13 +285,7 @@ namespace Wallet.Helper
             {
                 try
                 {
-                    var options = new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true, // Adjusts for case sensitivity issues
-                                                            // Add more options as needed
-                    };
-
-                    var responseContent = await httpResponse.Content.ReadFromJsonAsync<CustomerGetResponse>(options);
+                    var responseContent = await httpResponse.Content.ReadFromJsonAsync<CustomerGetResponse>(_jsonOptions);
 
                     if (responseContent == null)
                     {
@@ -382,13 +384,7 @@ namespace Wallet.Helper
             {
                 try
                 {
-                    var options = new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true, // Adjusts for case sensitivity issues
-                                                            // Add more options as needed
-                    };
-
-                    var responseContent = await httpResponse.Content.ReadFromJsonAsync<CustomerUpdateResponse>(options);
+                    var responseContent = await httpResponse.Content.ReadFromJsonAsync<CustomerUpdateResponse>(_jsonOptions);
                     Console.WriteLine($"responseContent: {JsonSerializer.Serialize(responseContent)}");
                     Console.WriteLine($"problems: {JsonSerializer.Serialize(responseContent?.Problems)}");
 
@@ -495,13 +491,7 @@ namespace Wallet.Helper
             {
                 try
                 {
-                    var options = new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true, // Adjusts for case sensitivity issues
-                                                            // Add more options as needed
-                    };
-
-                    var responseContent = await httpResponse.Content.ReadFromJsonAsync<CustomerCreateResponse>(options);
+                    var responseContent = await httpResponse.Content.ReadFromJsonAsync<CustomerCreateResponse>(_jsonOptions);
                     Console.WriteLine($"responseContent: {JsonSerializer.Serialize(responseContent)}");
                     Console.WriteLine($"problems: {JsonSerializer.Serialize(responseContent?.Problems)}");
 
@@ -604,13 +594,7 @@ namespace Wallet.Helper
             {
                 try
                 {
-                    var options = new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true, // Adjusts for case sensitivity issues
-                                                            // Add more options as needed
-                    };
-
-                    var responseContent = await httpResponse.Content.ReadFromJsonAsync<CustomerCreateFromTemplateResponse>(options);
+                    var responseContent = await httpResponse.Content.ReadFromJsonAsync<CustomerCreateFromTemplateResponse>(_jsonOptions);
                     Console.WriteLine($"responseContent: {JsonSerializer.Serialize(responseContent)}");
                     Console.WriteLine($"problems: {JsonSerializer.Serialize(responseContent?.Problems)}");
 
@@ -700,13 +684,7 @@ namespace Wallet.Helper
             {
                 try
                 {
-                    var options = new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true, // Adjusts for case sensitivity issues
-                                                            // Add more options as needed
-                    };
-
-                    var responseContent = await httpResponse.Content.ReadFromJsonAsync<CustomerAccountAliasListGetResponse>(options);
+                    var responseContent = await httpResponse.Content.ReadFromJsonAsync<CustomerAccountAliasListGetResponse>(_jsonOptions);
 
                     if (responseContent == null)
                     {
@@ -774,12 +752,6 @@ namespace Wallet.Helper
             var httpResponse = await _http.PostAsync($"{_baseUrl}/CustomerAccountAliasList", content);
 
             var rawContent = await httpResponse.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true, // Adjusts for case sensitivity issues
-                                                    // Add more options as needed
-            };
-
             _logger.LogInformation("rawContent: {RawContent}", JsonSerializer.Serialize(rawContent));
             _logger.LogInformation("httpResponse.IsSuccessStatusCode: {IsSuccessStatusCode}", httpResponse.IsSuccessStatusCode);
 
@@ -800,7 +772,7 @@ namespace Wallet.Helper
                         };
                     }
 
-                    var responseContent = await httpResponse.Content.ReadFromJsonAsync<CustomerAccountAliasCreateResponse>(options);
+                    var responseContent = await httpResponse.Content.ReadFromJsonAsync<CustomerAccountAliasCreateResponse>(_jsonOptions);
                     _logger.LogInformation("responseContent: {ResponseContent}", JsonSerializer.Serialize(responseContent));
                     _logger.LogInformation("Problems: {Problems}", JsonSerializer.Serialize(responseContent?.Problems));
 
@@ -900,7 +872,7 @@ namespace Wallet.Helper
             if (httpResponse.IsSuccessStatusCode)
             {
                 // Deserialize JSON response into your data object
-                var responseContent = await httpResponse.Content.ReadFromJsonAsync<WkycCustomerAccountAliasSetDefaultResponse>();
+                var responseContent = await httpResponse.Content.ReadFromJsonAsync<WkycCustomerAccountAliasSetDefaultResponse>(_jsonOptions);
 
                 if (responseContent == null)
                 {
@@ -953,7 +925,7 @@ namespace Wallet.Helper
             if (httpResponse.IsSuccessStatusCode)
             {
                 // Deserialize JSON response into your data object
-                var responseContent = await httpResponse.Content.ReadFromJsonAsync<WkycCustomerAccountAliasDeleteResponse>();
+                var responseContent = await httpResponse.Content.ReadFromJsonAsync<WkycCustomerAccountAliasDeleteResponse>(_jsonOptions);
 
                 if (responseContent == null)
                 {
@@ -1027,7 +999,7 @@ namespace Wallet.Helper
             if (httpResponse.IsSuccessStatusCode)
             {
                 // Deserialize JSON response into your data object
-                var responseContent = await httpResponse.Content.ReadFromJsonAsync<List<FileAttachmentGetInfo>>();
+                var responseContent = await httpResponse.Content.ReadFromJsonAsync<List<FileAttachmentGetInfo>>(_jsonOptions);
                 if (responseContent == null)
                 {
                     fileAttchmentListResponse.ErrorMessages = new List<string> { "Response content is null." };
@@ -1086,7 +1058,7 @@ namespace Wallet.Helper
             if (httpResponse.IsSuccessStatusCode)
             {
                 // Deserialize JSON response into your data object
-                var responseContent = await httpResponse.Content.ReadFromJsonAsync<FileAttachmentGetData>();
+                var responseContent = await httpResponse.Content.ReadFromJsonAsync<FileAttachmentGetData>(_jsonOptions);
                 if (responseContent == null)
                 {
                     fileAttachemenmtGetDataResponse.ErrorMessages = new List<string> { "Response content is null." };
@@ -1145,7 +1117,7 @@ namespace Wallet.Helper
             if (httpResponse.IsSuccessStatusCode)
             {
                 // Deserialize JSON response into your data object
-                var responseContent = await httpResponse.Content.ReadFromJsonAsync<FileAttachmentAddFileResponse>();
+                var responseContent = await httpResponse.Content.ReadFromJsonAsync<FileAttachmentAddFileResponse>(_jsonOptions);
 
                 if (responseContent == null)
                 {
@@ -1157,7 +1129,7 @@ namespace Wallet.Helper
                     if (httpFileDataResponse.IsSuccessStatusCode)
                     {
                         // Deserialize JSON response into your data object
-                        var fileDataresponseContent = await httpFileDataResponse.Content.ReadFromJsonAsync<FileAttachmentGetResponse>();
+                        var fileDataresponseContent = await httpFileDataResponse.Content.ReadFromJsonAsync<FileAttachmentGetResponse>(_jsonOptions);
                         if (fileDataresponseContent == null)
                         {
                             fileAttachemenmtGetDataResponse.ErrorMessages = new List<string> { "Response content is null." };
@@ -1224,7 +1196,7 @@ namespace Wallet.Helper
             if (httpResponse.IsSuccessStatusCode)
             {
                 // Deserialize JSON response into your data object
-                var responseContent = await httpResponse.Content.ReadFromJsonAsync<FileAttachmentUpdateFileInfoResponse>();
+                var responseContent = await httpResponse.Content.ReadFromJsonAsync<FileAttachmentUpdateFileInfoResponse>(_jsonOptions);
 
                 if (responseContent == null)
                 {
@@ -1278,7 +1250,7 @@ namespace Wallet.Helper
             if (httpResponse.IsSuccessStatusCode)
             {
                 // Deserialize JSON response into your data object
-                var responseContent = await httpResponse.Content.ReadFromJsonAsync<FileAttachmentDeleteFileResponse>();
+                var responseContent = await httpResponse.Content.ReadFromJsonAsync<FileAttachmentDeleteFileResponse>(_jsonOptions);
                 if (responseContent == null)
                 {
                     fileAttchmentDeleteResponse.ErrorMessages = new List<string> { "Response content is null." };
@@ -1352,7 +1324,7 @@ namespace Wallet.Helper
             try
             {
                 // Deserialize the response
-                var responseContent = await httpResponse.Content.ReadFromJsonAsync<VerifiedLinkSearchResponse>();
+                var responseContent = await httpResponse.Content.ReadFromJsonAsync<VerifiedLinkSearchResponse>(_jsonOptions);
 
                 if (responseContent == null)
                 {
@@ -1397,7 +1369,7 @@ namespace Wallet.Helper
             try
             {
                 // Deserialize the response
-                var responseContent = await httpResponse.Content.ReadFromJsonAsync<VerifiedLinkGetResponse>();
+                var responseContent = await httpResponse.Content.ReadFromJsonAsync<VerifiedLinkGetResponse>(_jsonOptions);
 
                 if (responseContent == null)
                 {
@@ -1477,7 +1449,7 @@ namespace Wallet.Helper
             if (httpResponse.IsSuccessStatusCode)
             {
                 // Deserialize JSON response into your data object
-                var responseContent = await httpResponse.Content.ReadFromJsonAsync<VerifiedLinkUpdateResponse>();
+                var responseContent = await httpResponse.Content.ReadFromJsonAsync<VerifiedLinkUpdateResponse>(_jsonOptions);
 
                 if (responseContent == null)
                 {
@@ -1535,7 +1507,7 @@ namespace Wallet.Helper
             if (httpResponse.IsSuccessStatusCode)
             {
                 // Deserialize JSON response into your data object
-                var responseContent = await httpResponse.Content.ReadFromJsonAsync<VerifiedLinkCreateResponse>();
+                var responseContent = await httpResponse.Content.ReadFromJsonAsync<VerifiedLinkCreateResponse>(_jsonOptions);
 
                 if (responseContent == null)
                 {
@@ -1597,7 +1569,7 @@ namespace Wallet.Helper
             if (httpResponse.IsSuccessStatusCode)
             {
                 // Deserialize JSON response into your data object
-                var responseContent = await httpResponse.Content.ReadFromJsonAsync<VerifiedLinkDeleteResponse>();
+                var responseContent = await httpResponse.Content.ReadFromJsonAsync<VerifiedLinkDeleteResponse>(_jsonOptions);
 
                 if (responseContent == null)
                 {
@@ -1663,7 +1635,7 @@ namespace Wallet.Helper
             if (httpResponse.IsSuccessStatusCode)
             {
                 // Deserialize JSON response into your data object
-                var responseContent = await httpResponse.Content.ReadFromJsonAsync<VerifiedLinkDeleteResponse>();
+                var responseContent = await httpResponse.Content.ReadFromJsonAsync<VerifiedLinkDeleteResponse>(_jsonOptions);
 
                 if (responseContent == null)
                 {
@@ -1727,7 +1699,7 @@ namespace Wallet.Helper
             if (httpResponse.IsSuccessStatusCode)
             {
                 // Deserialize JSON response into your data object
-                var responseContent = await httpResponse.Content.ReadFromJsonAsync<UserDoesUsernameExistResponse>();
+                var responseContent = await httpResponse.Content.ReadFromJsonAsync<UserDoesUsernameExistResponse>(_jsonOptions);
 
                 if (responseContent == null)
                 {
@@ -1802,7 +1774,7 @@ namespace Wallet.Helper
             if (httpResponse.IsSuccessStatusCode)
             {
                 // Deserialize JSON response into your data object
-                var responseContent = await httpResponse.Content.ReadFromJsonAsync<CustomerUserCreateResponse>();
+                var responseContent = await httpResponse.Content.ReadFromJsonAsync<CustomerUserCreateResponse>(_jsonOptions);
 
                 if (responseContent == null)
                 {
@@ -1877,7 +1849,7 @@ namespace Wallet.Helper
             if (httpResponse.IsSuccessStatusCode)
             {
                 // Deserialize JSON response into your data object
-                var responseContent = await httpResponse.Content.ReadFromJsonAsync<UserAccessRightTemplateApplyResponse>();
+                var responseContent = await httpResponse.Content.ReadFromJsonAsync<UserAccessRightTemplateApplyResponse>(_jsonOptions);
 
                 if (responseContent == null)
                 {
@@ -1951,7 +1923,7 @@ namespace Wallet.Helper
             if (httpResponse.IsSuccessStatusCode)
             {
                 // Deserialize JSON response into your data object
-                var responseContent = await httpResponse.Content.ReadFromJsonAsync<UserAccessRightTemplateLinkResponse>();
+                var responseContent = await httpResponse.Content.ReadFromJsonAsync<UserAccessRightTemplateLinkResponse>(_jsonOptions);
 
                 if (responseContent == null)
                 {
@@ -2016,13 +1988,7 @@ namespace Wallet.Helper
             {
                 try
                 {
-                    var options = new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true, // Adjusts for case sensitivity issues
-                                                            // Add more options as needed
-                    };
-
-                    var responseContent = await httpResponse.Content.ReadFromJsonAsync<CountryListGetResponse>(options);
+                    var responseContent = await httpResponse.Content.ReadFromJsonAsync<CountryListGetResponse>(_jsonOptions);
 
                     if (responseContent == null)
                     {
@@ -2113,13 +2079,7 @@ namespace Wallet.Helper
             {
                 try
                 {
-                    var options = new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true, // Adjusts for case sensitivity issues
-                                                            // Add more options as needed
-                    };
-
-                    var responseContent = await httpResponse.Content.ReadFromJsonAsync<PaymentCurrencyListGetResponse>(options);
+                    var responseContent = await httpResponse.Content.ReadFromJsonAsync<PaymentCurrencyListGetResponse>(_jsonOptions);
 
                     if (responseContent == null)
                     {
@@ -2178,13 +2138,7 @@ namespace Wallet.Helper
             {
                 try
                 {
-                    var options = new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true, // Adjusts for case sensitivity issues
-                                                            // Add more options as needed
-                    };
-
-                    var responseContent = await httpResponse.Content.ReadFromJsonAsync<CountryIdentificationTypeListGetResponse>(options);
+                    var responseContent = await httpResponse.Content.ReadFromJsonAsync<CountryIdentificationTypeListGetResponse>(_jsonOptions);
 
                     if (responseContent == null)
                     {
@@ -2254,13 +2208,7 @@ namespace Wallet.Helper
             {
                 try
                 {
-                    var options = new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true, // Adjusts for case sensitivity issues
-                                                            // Add more options as needed
-                    };
-
-                    var responseContent = await httpResponse.Content.ReadFromJsonAsync<UserAccountAliasListGetResponse>(options);
+                    var responseContent = await httpResponse.Content.ReadFromJsonAsync<UserAccountAliasListGetResponse>(_jsonOptions);
 
                     if (responseContent == null)
                     {
@@ -2342,7 +2290,7 @@ namespace Wallet.Helper
             if (httpResponse.IsSuccessStatusCode)
             {
                 // Deserialize JSON response into your data object
-                var responseContent = await httpResponse.Content.ReadFromJsonAsync<VerifyGetResponse>();
+                var responseContent = await httpResponse.Content.ReadFromJsonAsync<VerifyGetResponse>(_jsonOptions);
 
                 if (responseContent == null)
                 {
@@ -2400,7 +2348,7 @@ namespace Wallet.Helper
             if (httpResponse.IsSuccessStatusCode)
             {
                 // Deserialize JSON response into your data object
-                var responseContent = await httpResponse.Content.ReadFromJsonAsync<VerifyGetResponse>();
+                var responseContent = await httpResponse.Content.ReadFromJsonAsync<VerifyGetResponse>(_jsonOptions);
 
                 if (responseContent == null)
                 {
@@ -2480,7 +2428,7 @@ namespace Wallet.Helper
             if (httpResponse.IsSuccessStatusCode)
             {
                 // Deserialize JSON response into your data object
-                var responseContent = await httpResponse.Content.ReadFromJsonAsync<VerifyGetMultipleResponse>();
+                var responseContent = await httpResponse.Content.ReadFromJsonAsync<VerifyGetMultipleResponse>(_jsonOptions);
 
                 if (responseContent == null)
                 {
@@ -2542,7 +2490,7 @@ namespace Wallet.Helper
             if (httpResponse.IsSuccessStatusCode)
             {
                 // Deserialize JSON response into your data object
-                var responseContent = await httpResponse.Content.ReadFromJsonAsync<VerifyGetResponse>();
+                var responseContent = await httpResponse.Content.ReadFromJsonAsync<VerifyGetResponse>(_jsonOptions);
 
                 if (responseContent == null)
                 {
@@ -2578,7 +2526,7 @@ namespace Wallet.Helper
             if (httpResponse.IsSuccessStatusCode)
             {
                 // Deserialize JSON response into your data object
-                var responseContent = await httpResponse.Content.ReadFromJsonAsync<VerifyGetResponse>();
+                var responseContent = await httpResponse.Content.ReadFromJsonAsync<VerifyGetResponse>(_jsonOptions);
 
                 if (responseContent == null)
                 {
@@ -2622,7 +2570,7 @@ namespace Wallet.Helper
             if (httpResponse.IsSuccessStatusCode)
             {
                 // Deserialize JSON response into your data object
-                var responseContent = await httpResponse.Content.ReadFromJsonAsync<ItemNoteGetAllForItemResponse>();
+                var responseContent = await httpResponse.Content.ReadFromJsonAsync<ItemNoteGetAllForItemResponse>(_jsonOptions);
 
                 if (responseContent == null)
                 {
@@ -2688,7 +2636,7 @@ namespace Wallet.Helper
             try
             {
                 // Deserialize the response
-                var responseContent = await httpResponse.Content.ReadFromJsonAsync<ItemNoteGetResponse>();
+                var responseContent = await httpResponse.Content.ReadFromJsonAsync<ItemNoteGetResponse>(_jsonOptions);
 
                 if (httpResponse.IsSuccessStatusCode)
                 {
@@ -2766,7 +2714,7 @@ namespace Wallet.Helper
             if (httpResponse.IsSuccessStatusCode)
             {
                 // Deserialize JSON response into your data object
-                var responseContent = await httpResponse.Content.ReadFromJsonAsync<ItemNoteUpdateResponse>();
+                var responseContent = await httpResponse.Content.ReadFromJsonAsync<ItemNoteUpdateResponse>(_jsonOptions);
 
                 if (responseContent == null)
                 {
@@ -2840,7 +2788,7 @@ namespace Wallet.Helper
             if (httpResponse.IsSuccessStatusCode)
             {
                 // Deserialize JSON response into your data object
-                var responseContent = await httpResponse.Content.ReadFromJsonAsync<ItemNoteCreateResponse>();
+                var responseContent = await httpResponse.Content.ReadFromJsonAsync<ItemNoteCreateResponse>(_jsonOptions);
 
                 if (responseContent == null)
                 {
@@ -2913,7 +2861,7 @@ namespace Wallet.Helper
             if (httpResponse.IsSuccessStatusCode)
             {
                 // Deserialize JSON response into your data object
-                var responseContent = await httpResponse.Content.ReadFromJsonAsync<ItemNoteDeleteResponse>();
+                var responseContent = await httpResponse.Content.ReadFromJsonAsync<ItemNoteDeleteResponse>(_jsonOptions);
 
                 if (responseContent == null)
                 {
@@ -2965,7 +2913,7 @@ namespace Wallet.Helper
             if (httpResponse.IsSuccessStatusCode)
             {
                 // Deserialize JSON response into your data object
-                var responseContent = await httpResponse.Content.ReadFromJsonAsync<ItemNoteDeleteResponse>();
+                var responseContent = await httpResponse.Content.ReadFromJsonAsync<ItemNoteDeleteResponse>(_jsonOptions);
 
                 if (responseContent == null)
                 {
