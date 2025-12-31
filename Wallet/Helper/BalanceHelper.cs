@@ -28,7 +28,8 @@ namespace Wallet.Helper
         public async Task<List<CustomerBalanceData>> GetBalancesAsync(string token)
         {
             var balances = new List<CustomerBalanceData>();
-            string baseUrl = _configuration["Win:Production:Url"];
+            string mode = _configuration["Win:Mode"] ?? "Production";
+            string baseUrl = _configuration[$"Win:{mode}:Url"];
             string customerId = _httpContextAccessor.HttpContext?.User?.FindFirst("CustomerId")?.Value;
 
             if (string.IsNullOrEmpty(baseUrl) || string.IsNullOrEmpty(customerId))

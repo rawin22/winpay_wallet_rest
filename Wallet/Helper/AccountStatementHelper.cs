@@ -28,7 +28,8 @@ namespace Wallet.Helper
                 Entries = new List<CustomerAccountStatementEntryData>()
             };
 
-            string baseUrl = _configuration["Win:Production:Url"];
+            string mode = _configuration["Win:Mode"] ?? "Production";
+            string baseUrl = _configuration[$"Win:{mode}:Url"];
             if (string.IsNullOrEmpty(baseUrl))
             {
                 _logger.LogError("API base URL is missing.");

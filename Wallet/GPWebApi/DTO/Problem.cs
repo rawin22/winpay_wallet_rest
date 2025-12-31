@@ -1,15 +1,21 @@
 ﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace GPWebApi.DTO;
 
 public class Problem
 {
-    public int ProblemCode { get; protected set; } = 0;
-    public ProblemType ProblemType { get; protected set; }
-    public string Message { get; protected set; } = string.Empty;
-    public string MessageDetails { get; protected set; } = string.Empty;
-    public string FieldName { get; protected set; } = string.Empty;
-    public string FieldValue { get; protected set; } = string.Empty;
+    public int ProblemCode { get; set; } = 0;
+    public ProblemType ProblemType { get; set; }
+    public string Message { get; set; } = string.Empty;
+    public string MessageDetails { get; set; } = string.Empty;
+    public string FieldName { get; set; } = string.Empty;
+    public string FieldValue { get; set; } = string.Empty;
+
+    [JsonConstructor]
+    public Problem()
+    {
+    }
 
     public Problem(int problemCode, ProblemType problemType, string message, string messageDetails)
     {

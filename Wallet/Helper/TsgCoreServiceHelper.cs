@@ -28,7 +28,10 @@ namespace Wallet.Helper
             _http = http;
             _configuration = configuration;
             _authenticationStateProvider = authenticationStateProvider;
-            _baseUrl = _configuration["Win:Production:Url"] ?? "NO PROD URL"; // Null-coalescing for safety
+
+            string mode = _configuration["Win:Mode"] ?? "Production";
+            _baseUrl = _configuration[$"Win:{mode}:Url"] ?? "NO URL CONFIGURED";
+
             _httpContextAccessor = httpContextAccessor;
             _jsRuntime = jsRuntime;
 
@@ -37,7 +40,8 @@ namespace Wallet.Helper
 
         public async Task<AuthenticateResponse> AuthenticateAsync(string username, string password)
         {
-            string serviceCallerId = _configuration["Win:Production:CallerId"] ?? "NO CALLERID CONFIGURAED"; // Null-coalescing for safety
+            string mode = _configuration["Win:Mode"] ?? "Production";
+            string serviceCallerId = _configuration[$"Win:{mode}:CallerId"] ?? "NO CALLERID CONFIGURAED"; // Null-coalescing for safety
             _logger.LogInformation("AuthenticateAsync:\n<{serviceCallerId}>\n<{username}>\n<{password}>", serviceCallerId, username, password);
 
             var authRequest = new AuthenticateRequest
